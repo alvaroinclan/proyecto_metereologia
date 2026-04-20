@@ -16,6 +16,7 @@ dependencies = [
     # "polars>=1.0",
     # "dask>=2024.1",
     # "meteostat>=1.6",
+    "polars>=1.40.0",
 ]
 
 [dependency-groups]
@@ -25,6 +26,7 @@ dev = [
     "ruff>=0.8",
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
+    "polars>=1.40.0",
 ]
 
 [tool.pytest.ini_options]
