@@ -1,6 +1,6 @@
 [project]
 name = "proyecto_meteorologia"
-version = "0.0.3"
+version = "0.0.4"
 description = "Análisis de datos meteorológicos — Big Data"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,10 +12,6 @@ dependencies = [
     "matplotlib>=3.7",
     "seaborn>=0.12",
     "requests>=2.31",
-    # add more as your analysis requires:
-    # "polars>=1.0",
-    # "dask>=2024.1",
-    # "meteostat>=1.6",
     "polars>=1.40.0",
 ]
 
