@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import polars as pl
 
 
@@ -29,4 +30,3 @@ def load_all_stations(folder: str) -> pl.DataFrame:
 
     return pl.concat(dfs, how="diagonal")
 
-    
