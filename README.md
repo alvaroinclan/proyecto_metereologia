@@ -11,9 +11,19 @@
 
 ---
 
-## Description
+## Descripción del Proyecto
 
-*(Replace with your line-of-work description.)*
+Este repositorio contiene el proyecto final para la asignatura de Big Data. El objetivo principal (Línea 4) es la **Evaluación del potencial eólico a partir de datos de viento**, simulando un escenario de procesamiento masivo.
+
+El proyecto se estructura en distintas fases de análisis.
+
+### Fase 1: Lectura e Ingestión de Datos (Completada)
+En esta fase nos hemos centrado en la lectura y procesamiento por lotes (*batch*) de un archivo GRIB proveniente de Copernicus Climate Data Store (ERA5):
+- **Mallado de Localizaciones:** Se generan 50 localizaciones geográficas ubicadas en el Norte de España, usando el mallado estándar de ECMWF (resolución 0.1°).
+- **Procesamiento de Archivos GRIB (`xarray` + `cfgrib`):** Se lee el archivo GRIB de ERA5, que almacena internamente dos conjuntos de datos separados (vientos regulares y rachas), y se realiza una interpolación iterativa para acotar los datos a las coordenadas generadas.
+- **Cálculo Vectorial:** Empleando un enfoque *Big Data* de alto rendimiento con `Polars`, se extraen las componentes $u$ y $v$ del viento (a 10 y 100 metros) y se aplican operaciones vectoriales para derivar los módulos de velocidad absoluta y las direcciones en grados (0-360º).
+- **Persistencia en Parquet:** Por razones de eficiencia y compresión, el marco de datos final de las 50 localizaciones para todas las horas del año se almacena en `data/staging/all_stations.parquet`.
+- **Testing (`pytest`):** Se han desarrollado tests unitarios validando la integridad geométrica de la malla, el aislamiento en el parseo (`mocking`) y la veracidad física de los datos extraídos (ej. $ws \ge 0$).
 
 ## Documentation
 

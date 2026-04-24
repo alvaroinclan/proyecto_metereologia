@@ -13,6 +13,11 @@ dependencies = [
     "seaborn>=0.12",
     "requests>=2.31",
     "polars>=1.40.0",
+    "cfgrib>=0.9",
+    "xarray>=2024.1",
+    "eccodes>=2.36",
+    "scipy>=1.15.3",
+    "pyarrow>=24.0.0",
 ]
 
 [dependency-groups]
