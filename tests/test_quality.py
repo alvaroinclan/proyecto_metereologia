@@ -15,6 +15,7 @@ from weather.data.quality import (
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def sample_wind_df() -> pl.DataFrame:
     """A small but realistic wind DataFrame with 2 stations and 24 hours.
@@ -36,12 +37,14 @@ def sample_wind_df() -> pl.DataFrame:
             else:
                 ws = rng.uniform(2.0, 12.0)
                 wd = rng.uniform(0.0, 360.0)
-            rows.append({
-                "station": st,
-                "time": f"2025-01-01T{h:02d}:00:00",
-                "ws10": ws,
-                "wd10": wd,
-            })
+            rows.append(
+                {
+                    "station": st,
+                    "time": f"2025-01-01T{h:02d}:00:00",
+                    "ws10": ws,
+                    "wd10": wd,
+                }
+            )
 
     return pl.DataFrame(rows)
 
@@ -60,12 +63,14 @@ def uniform_wind_df() -> pl.DataFrame:
     for sector in range(n_sectors):
         mid = sector * sector_width + sector_width / 2
         for _ in range(n_per_sector):
-            rows.append({
-                "station": "uniform_st",
-                "time": "2025-01-01T00:00:00",
-                "ws10": 5.0,
-                "wd10": mid,
-            })
+            rows.append(
+                {
+                    "station": "uniform_st",
+                    "time": "2025-01-01T00:00:00",
+                    "ws10": 5.0,
+                    "wd10": mid,
+                }
+            )
 
     return pl.DataFrame(rows)
 
@@ -77,23 +82,27 @@ def biased_wind_df() -> pl.DataFrame:
 
     # 500 observations in sector 0 (0–30°)
     for _ in range(500):
-        rows.append({
-            "station": "biased_st",
-            "time": "2025-01-01T00:00:00",
-            "ws10": 6.0,
-            "wd10": 15.0,
-        })
+        rows.append(
+            {
+                "station": "biased_st",
+                "time": "2025-01-01T00:00:00",
+                "ws10": 6.0,
+                "wd10": 15.0,
+            }
+        )
 
     # 10 observations in every other sector (1..11)
     for sector in range(1, 12):
         mid = sector * 30.0 + 15.0
         for _ in range(10):
-            rows.append({
-                "station": "biased_st",
-                "time": "2025-01-01T00:00:00",
-                "ws10": 6.0,
-                "wd10": mid,
-            })
+            rows.append(
+                {
+                    "station": "biased_st",
+                    "time": "2025-01-01T00:00:00",
+                    "ws10": 6.0,
+                    "wd10": mid,
+                }
+            )
 
     return pl.DataFrame(rows)
 
@@ -101,6 +110,7 @@ def biased_wind_df() -> pl.DataFrame:
 # ---------------------------------------------------------------------------
 # Tests – Calm Corrections
 # ---------------------------------------------------------------------------
+
 
 class TestApplyCalmCorrections:
     """Tests for apply_calm_corrections."""
@@ -168,11 +178,13 @@ class TestApplyCalmCorrections:
 
     def test_custom_column_names(self):
         """Works with non-default wind column names (e.g. ws100 / wd100)."""
-        df = pl.DataFrame({
-            "station": ["a", "a"],
-            "speed": [0.1, 5.0],
-            "direction": [180.0, 270.0],
-        })
+        df = pl.DataFrame(
+            {
+                "station": ["a", "a"],
+                "speed": [0.1, 5.0],
+                "direction": [180.0, 270.0],
+            }
+        )
         result = apply_calm_corrections(df, ws_col="speed", wd_col="direction")
         assert result.filter(pl.col("is_calm")).height == 1
         assert result.filter(pl.col("is_calm"))["direction"].is_null().all()
@@ -181,6 +193,7 @@ class TestApplyCalmCorrections:
 # ---------------------------------------------------------------------------
 # Tests – Sector Frequencies
 # ---------------------------------------------------------------------------
+
 
 class TestComputeSectorFrequencies:
     """Tests for compute_sector_frequencies."""
@@ -212,22 +225,26 @@ class TestComputeSectorFrequencies:
 
     def test_null_directions_excluded(self):
         """Observations with null direction are not counted."""
-        df = pl.DataFrame({
-            "station": ["s"] * 5,
-            "wd10": [10.0, None, 100.0, None, 200.0],
-            "ws10": [5.0, 0.1, 5.0, 0.1, 5.0],
-        })
+        df = pl.DataFrame(
+            {
+                "station": ["s"] * 5,
+                "wd10": [10.0, None, 100.0, None, 200.0],
+                "ws10": [5.0, 0.1, 5.0, 0.1, 5.0],
+            }
+        )
         freqs = compute_sector_frequencies(df, n_sectors=12)
         total = freqs["count"].sum()
         assert total == 3  # only non-null dirs counted
 
     def test_direction_360_maps_to_sector_0(self):
         """Direction exactly 360° should wrap to sector 0."""
-        df = pl.DataFrame({
-            "station": ["s", "s"],
-            "wd10": [0.0, 360.0],
-            "ws10": [5.0, 5.0],
-        })
+        df = pl.DataFrame(
+            {
+                "station": ["s", "s"],
+                "wd10": [0.0, 360.0],
+                "ws10": [5.0, 5.0],
+            }
+        )
         freqs = compute_sector_frequencies(df, n_sectors=12)
         assert freqs.filter(pl.col("sector") == 0)["count"].sum() == 2
 
@@ -243,6 +260,7 @@ class TestComputeSectorFrequencies:
 # ---------------------------------------------------------------------------
 # Tests – Flag Sector Inconsistencies
 # ---------------------------------------------------------------------------
+
 
 class TestFlagSectorInconsistencies:
     """Tests for flag_sector_inconsistencies."""
@@ -278,9 +296,7 @@ class TestFlagSectorInconsistencies:
     def test_lenient_threshold_no_flag(self, biased_wind_df: pl.DataFrame):
         """With a very high tolerance even the biased station isn't flagged."""
         freqs = compute_sector_frequencies(biased_wind_df, n_sectors=12)
-        flags = flag_sector_inconsistencies(
-            freqs, n_sectors=12, max_deviation=999.0
-        )
+        flags = flag_sector_inconsistencies(freqs, n_sectors=12, max_deviation=999.0)
         assert not flags["flagged"][0]
 
     def test_multi_station(self, sample_wind_df: pl.DataFrame):
@@ -295,6 +311,7 @@ class TestFlagSectorInconsistencies:
 # ---------------------------------------------------------------------------
 # Tests – End-to-end run_quality_control
 # ---------------------------------------------------------------------------
+
 
 class TestRunQualityControl:
     """Tests for the combined run_quality_control pipeline."""
@@ -341,15 +358,26 @@ class TestRunQualityControl:
 
     def test_pipeline_with_ws100_wd100(self):
         """QC pipeline works with 100m height columns."""
-        df = pl.DataFrame({
-            "station": ["s"] * 10,
-            "time": [f"2025-01-01T{h:02d}:00:00" for h in range(10)],
-            "ws100": [0.1, 0.2, 5.0, 6.0, 7.0, 8.0, 3.0, 4.0, 9.0, 10.0],
-            "wd100": [10.0, 350.0, 90.0, 180.0, 270.0, 45.0, 135.0, 225.0, 315.0, 60.0],
-        })
-        df_c, flags = run_quality_control(
-            df, ws_col="ws100", wd_col="wd100"
+        df = pl.DataFrame(
+            {
+                "station": ["s"] * 10,
+                "time": [f"2025-01-01T{h:02d}:00:00" for h in range(10)],
+                "ws100": [0.1, 0.2, 5.0, 6.0, 7.0, 8.0, 3.0, 4.0, 9.0, 10.0],
+                "wd100": [
+                    10.0,
+                    350.0,
+                    90.0,
+                    180.0,
+                    270.0,
+                    45.0,
+                    135.0,
+                    225.0,
+                    315.0,
+                    60.0,
+                ],
+            }
         )
+        df_c, flags = run_quality_control(df, ws_col="ws100", wd_col="wd100")
         assert "is_calm" in df_c.columns
         # 2 calms (0.1 and 0.2)
         assert df_c.filter(pl.col("is_calm")).height == 2

@@ -13,8 +13,8 @@ def generate_target_locations() -> tuple[xr.DataArray, xr.DataArray, list[str]]:
     """
     # Define 5 latitudes and 10 longitudes to get 50 points in Northern Spain
     # roughly covering Asturias/Cantabria/Basque Country
-    lats = np.arange(42.8, 43.3, 0.1) # 5 points: 42.8, 42.9, 43.0, 43.1, 43.2
-    lons = np.arange(-6.0, -5.0, 0.1) # 10 points: -6.0 to -5.1
+    lats = np.arange(42.8, 43.3, 0.1)  # 5 points: 42.8, 42.9, 43.0, 43.1, 43.2
+    lons = np.arange(-6.0, -5.0, 0.1)  # 10 points: -6.0 to -5.1
 
     # Create meshgrid
     lon_grid, lat_grid = np.meshgrid(lons, lats)
@@ -30,7 +30,9 @@ def generate_target_locations() -> tuple[xr.DataArray, xr.DataArray, list[str]]:
     return lat_da, lon_da, station_ids
 
 
-def process_dataset_chunk(ds: xr.Dataset, lat_da: xr.DataArray, lon_da: xr.DataArray) -> pl.DataFrame:
+def process_dataset_chunk(
+    ds: xr.Dataset, lat_da: xr.DataArray, lon_da: xr.DataArray
+) -> pl.DataFrame:
     """
     Interpolate dataset to target locations and convert to Polars DataFrame.
     """
@@ -85,7 +87,9 @@ def load_grib_data_in_batches(grib_path: str, batch_size: int = 10) -> pl.DataFr
         batch_lats = lat_da.isel(station=slice(i, i + batch_size))
         batch_lons = lon_da.isel(station=slice(i, i + batch_size))
 
-        print(f"  Processing batch {i//batch_size + 1}/{(total_locations-1)//batch_size + 1}...")
+        print(
+            f"  Processing batch {i // batch_size + 1}/{(total_locations - 1) // batch_size + 1}..."
+        )
 
         df_wind = None
         if ds_wind is not None:
@@ -111,14 +115,15 @@ def load_grib_data_in_batches(grib_path: str, batch_size: int = 10) -> pl.DataFr
     # Calculate wind speed and direction (vectorial calculation as requested in Reto Big Data)
     if "u10" in final_df.columns and "v10" in final_df.columns:
         final_df = final_df.with_columns(
-            ws10=np.sqrt(pl.col("u10")**2 + pl.col("v10")**2),
-            wd10=(180 / np.pi * np.arctan2(pl.col("u10"), pl.col("v10")) + 180) % 360
+            ws10=np.sqrt(pl.col("u10") ** 2 + pl.col("v10") ** 2),
+            wd10=(180 / np.pi * np.arctan2(pl.col("u10"), pl.col("v10")) + 180) % 360,
         )
 
     if "u100" in final_df.columns and "v100" in final_df.columns:
         final_df = final_df.with_columns(
-            ws100=np.sqrt(pl.col("u100")**2 + pl.col("v100")**2),
-            wd100=(180 / np.pi * np.arctan2(pl.col("u100"), pl.col("v100")) + 180) % 360
+            ws100=np.sqrt(pl.col("u100") ** 2 + pl.col("v100") ** 2),
+            wd100=(180 / np.pi * np.arctan2(pl.col("u100"), pl.col("v100")) + 180)
+            % 360,
         )
 
     return final_df

@@ -8,4 +8,3 @@ def celsius_to_fahrenheit(temp_c: float) -> float:
         The temperature in degrees Fahrenheit.
     """
     return (temp_c * 9 / 5) + 32
-

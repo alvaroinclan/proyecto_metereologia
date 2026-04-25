@@ -63,11 +63,13 @@ def run_qc(
         # Rename is_calm to include height level suffix
         height = ws_col.replace("ws", "")
         df = df.rename({"is_calm": f"is_calm_{height}"})
-        flags = flags.rename({
-            "chi2": f"chi2_{height}",
-            "max_sector_deviation": f"max_sector_deviation_{height}",
-            "flagged": f"flagged_{height}",
-        })
+        flags = flags.rename(
+            {
+                "chi2": f"chi2_{height}",
+                "max_sector_deviation": f"max_sector_deviation_{height}",
+                "flagged": f"flagged_{height}",
+            }
+        )
         all_flags.append(flags)
 
         n_calms = df.filter(pl.col(f"is_calm_{height}")).height

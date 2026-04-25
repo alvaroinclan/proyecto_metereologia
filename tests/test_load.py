@@ -30,6 +30,7 @@ def test_generate_target_locations():
     assert float(lon_da.min()) >= -10.0
     assert float(lon_da.max()) <= 0.0
 
+
 def test_process_dataset_chunk():
     """Test the dataset interpolation and polars conversion independently."""
     # Create a mock xarray dataset
@@ -47,20 +48,24 @@ def test_process_dataset_chunk():
             time=times,
             latitude=lats,
             longitude=lons,
-            number=0, # this should be dropped
+            number=0,  # this should be dropped
         ),
     )
 
     # Generate mock target locations (just 2 points for simplicity)
-    target_lats = xr.DataArray([43.1, 43.15], dims="station", coords={"station": ["st_1", "st_2"]})
-    target_lons = xr.DataArray([-5.9, -5.8], dims="station", coords={"station": ["st_1", "st_2"]})
+    target_lats = xr.DataArray(
+        [43.1, 43.15], dims="station", coords={"station": ["st_1", "st_2"]}
+    )
+    target_lons = xr.DataArray(
+        [-5.9, -5.8], dims="station", coords={"station": ["st_1", "st_2"]}
+    )
 
     # Process
     df = process_dataset_chunk(ds_mock, target_lats, target_lons)
 
     # Verify outputs
     assert isinstance(df, pl.DataFrame)
-    assert df.shape == (2, 4) # time, station, u10, v10
+    assert df.shape == (2, 4)  # time, station, u10, v10
 
     cols = df.columns
     assert "time" in cols
@@ -74,7 +79,10 @@ def test_process_dataset_chunk():
     assert "number" not in cols
     assert "surface" not in cols
 
-@pytest.mark.skipif(not os.path.exists("data/raw/data.grib"), reason="GRIB file not found")
+
+@pytest.mark.skipif(
+    not os.path.exists("data/raw/data.grib"), reason="GRIB file not found"
+)
 def test_load_grib_data_in_batches():
     df = load_grib_data_in_batches("data/raw/data.grib", batch_size=50)
 
@@ -95,7 +103,11 @@ def test_load_grib_data_in_batches():
         assert df["wd10"].min() >= 0.0
         assert df["wd10"].max() <= 360.0
 
-@pytest.mark.skipif(not os.path.exists("data/staging/all_stations.parquet"), reason="Parquet file not generated yet")
+
+@pytest.mark.skipif(
+    not os.path.exists("data/staging/all_stations.parquet"),
+    reason="Parquet file not generated yet",
+)
 def test_generated_parquet():
     """Verify that the generated Parquet file in the staging layer is correct."""
     parquet_path = "data/staging/all_stations.parquet"

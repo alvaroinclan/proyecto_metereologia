@@ -28,6 +28,7 @@ import polars as pl
 # 1. Calm corrections
 # ---------------------------------------------------------------------------
 
+
 def apply_calm_corrections(
     df: pl.DataFrame,
     ws_col: str = "ws10",
@@ -80,6 +81,7 @@ def apply_calm_corrections(
 # 2. Sector consistency
 # ---------------------------------------------------------------------------
 
+
 def compute_sector_frequencies(
     df: pl.DataFrame,
     wd_col: str = "wd10",
@@ -111,8 +113,7 @@ def compute_sector_frequencies(
     sector_width = 360.0 / n_sectors
 
     sector_df = (
-        df
-        .filter(pl.col(wd_col).is_not_null())
+        df.filter(pl.col(wd_col).is_not_null())
         .with_columns(
             # Sector index 0 .. n_sectors-1
             (pl.col(wd_col) / sector_width).floor().cast(pl.Int32).alias("sector")
@@ -129,18 +130,13 @@ def compute_sector_frequencies(
     )
 
     # Compute relative frequency within each station
-    total_per_station = (
-        sector_df
-        .group_by(station_col)
-        .agg(pl.col("count").sum().alias("total"))
+    total_per_station = sector_df.group_by(station_col).agg(
+        pl.col("count").sum().alias("total")
     )
 
     sector_df = (
-        sector_df
-        .join(total_per_station, on=station_col)
-        .with_columns(
-            (pl.col("count") / pl.col("total")).alias("freq")
-        )
+        sector_df.join(total_per_station, on=station_col)
+        .with_columns((pl.col("count") / pl.col("total")).alias("freq"))
         .drop("total")
         .sort([station_col, "sector"])
     )
@@ -194,15 +190,13 @@ def flag_sector_inconsistencies(
     # Chi-squared: sum over sectors of (obs - expected)^2 / expected
     # We work with frequencies (sum to 1), so expected = 1/n_sectors
     station_stats = (
-        with_deviation
-        .group_by(station_col)
+        with_deviation.group_by(station_col)
         .agg(
             # chi2 = N * sum_i (f_i - e)^2 / e  — but since we have
             # frequencies we use the simplified form:
-            (
-                ((pl.col("freq") - expected_freq) ** 2 / expected_freq)
-                .sum()
-            ).alias("chi2"),
+            (((pl.col("freq") - expected_freq) ** 2 / expected_freq).sum()).alias(
+                "chi2"
+            ),
             pl.col("sector_deviation").max().alias("max_sector_deviation"),
             pl.col("count").sum().alias("total_obs"),
         )

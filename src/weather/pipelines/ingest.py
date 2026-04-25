@@ -19,5 +19,6 @@ def run_ingestion():
     df.write_parquet(output_path)
     print(f"Datos guardados en archivo parquet: {output_path}")
 
+
 if __name__ == "__main__":
     run_ingestion()
