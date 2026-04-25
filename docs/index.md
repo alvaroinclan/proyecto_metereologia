@@ -132,9 +132,84 @@ tests/
 └── test_load.py              # 4 tests unitarios y de integración
 ```
 
-### Fase 2: Control de Calidad 🔲
+### Fase 2: Control de Calidad ✅
 
-*Próximamente*: Calm corrections, sector consistency, detección de outliers.
+En esta fase se implementa un control de calidad específico para datos de viento, siguiendo las recomendaciones de la Organización Meteorológica Mundial (OMM). Se aplican dos técnicas complementarias: **calm corrections** y **sector consistency**.
+
+#### 1. Calm Corrections (Corrección de Calmas)
+
+Cuando la velocidad del viento cae por debajo de un umbral configurable (por defecto 0.5 m/s, criterio OMM), la dirección del viento asociada no tiene significado físico — la veleta no se orienta con vientos tan débiles. En estos casos:
+
+- La dirección del viento (`wd10`, `wd100`) se establece a `null`
+- Se añade una columna booleana `is_calm_10` / `is_calm_100` para facilitar el filtrado posterior
+
+| Nivel de altura | Calmas detectadas | Porcentaje |
+|-----------------|-------------------|------------|
+| 10 m            | 16 497            | 3.77 %     |
+| 100 m           | 5 283             | 1.21 %     |
+
+> Las calmas son más frecuentes a 10 m que a 100 m, lo cual es coherente con el perfil logarítmico del viento: a mayor altura, mayor velocidad media.
+
+#### 2. Sector Consistency (Consistencia Sectorial)
+
+La rosa de vientos se divide en $N$ sectores iguales (por defecto 12, de 30° cada uno). Para cada estación se calcula la frecuencia relativa de direcciones por sector y se compara con la distribución uniforme esperada ($1/N$):
+
+- **Ratio de desviación** por sector: $r_i = f_i \cdot N$, donde $f_i$ es la frecuencia observada en el sector $i$
+- **Chi-cuadrado de Pearson**: $\chi^2 = N_{\mathrm{obs}} \cdot \sum_{i=1}^{N} \frac{(f_i - 1/N)^2}{1/N}$
+- **Flagged**: una estación se marca como potencialmente problemática si algún sector tiene $r_i > 3.0$
+
+| Nivel de altura | Estaciones flagged | Estación | $\chi^2$ | Max desviación |
+|-----------------|--------------------|----------|----------|----------------|
+| 10 m            | 1                  | `station_25` | 6 314.1 | 3.03 |
+| 100 m           | 0                  | — | — | — |
+
+> `station_25` presenta una distribución sectorial ligeramente sesgada a 10 m (ratio máximo 3.03), lo que puede indicar efectos de orografía local. A 100 m la distribución se normaliza.
+
+#### 3. Tratamiento de Datos Faltantes
+
+De las 50 localizaciones originales, **20 estaciones** (station_30 a station_49) tienen datos completamente nulos — se encuentran en el borde del dominio del archivo GRIB y la interpolación lineal no puede extrapolar. El pipeline las trata correctamente:
+
+- `is_calm` = `null` (no se puede determinar si es calma sin dato de velocidad)
+- Excluidas automáticamente del análisis de consistencia sectorial
+
+#### 4. Datos de Salida
+
+El pipeline genera dos archivos Parquet en `data/clean/`:
+
+| Archivo | Contenido | Columnas añadidas |
+|---------|-----------|-------------------|
+| `all_stations_qc.parquet` | DataFrame corregido (438 000 filas × 18 cols) | `is_calm_10`, `is_calm_100` |
+| `station_qc_flags.parquet` | Flags de QC por estación (30 filas × 9 cols) | `chi2_*`, `max_sector_deviation_*`, `flagged_*` |
+
+#### 5. Testing
+
+Se implementan **28 tests unitarios** organizados en 4 clases:
+
+| Clase de test | Tests | Qué verifica |
+|---------------|-------|-------------|
+| `TestApplyCalmCorrections` | 10 | Nullificación de dirección en calmas, preservación de no-calmas, flag `is_calm`, umbrales extremos (0 y ∞), validación de errores (threshold negativo, columnas ausentes), inmutabilidad del DataFrame original, nombres de columna personalizados |
+| `TestComputeSectorFrequencies` | 6 | Distribución uniforme perfecta → freq = 1/12, rango de sectores [0, N), suma de frecuencias = 1 por estación, exclusión de direcciones nulas, wrap 360° → sector 0, sectores personalizados (4 cuadrantes) |
+| `TestFlagSectorInconsistencies` | 5 | Distribución uniforme no flagged ($\chi^2 \approx 0$), distribución sesgada flagged ($\chi^2 \gg 0$), ratio máximo de desviación, tolerancia alta desactiva flag, multi-estación |
+| `TestRunQualityControl` | 7 | Retorno de dos DataFrames, columnas esperadas en flags, preservación de filas (sin eliminación), todas las estaciones reciben flags, parámetros personalizados, compatibilidad con 100 m |
+
+#### 6. Estructura de Código
+
+```
+src/weather/
+├── data/
+│   ├── __init__.py
+│   ├── load.py              # (Fase 1) Ingestión GRIB
+│   └── quality.py           # apply_calm_corrections(), compute_sector_frequencies(),
+│                             # flag_sector_inconsistencies(), run_quality_control()
+└── pipelines/
+    ├── __init__.py
+    ├── ingest.py             # (Fase 1) run_ingestion()
+    └── qc.py                 # run_qc() → lee Parquet staging, aplica QC, genera salida
+
+tests/
+├── test_load.py              # (Fase 1) 4 tests
+└── test_quality.py           # 28 tests de control de calidad
+```
 
 ### Fase 3: Distribuciones de Weibull 🔲
 
