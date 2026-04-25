@@ -106,7 +106,27 @@ El DataFrame final se almacena en formato **Apache Parquet** en `data/staging/al
 - Lectura rápida columnar para las fases posteriores
 - Tipado estricto de columnas
 
-#### 6. Testing
+#### 6. Resultados e Interpretación
+
+El pipeline de ingestión procesa con éxito el archivo GRIB completo y genera un DataFrame con las siguientes características:
+
+| Métrica | Valor |
+|---------|-------|
+| Filas totales | 438 000 |
+| Columnas | 16 (time, station, u10, v10, u100, v100, u10n, v10n, fg10, i10fg, ws10, wd10, ws100, wd100) |
+| Estaciones únicas | 50 |
+| Cobertura temporal | 1 año completo (8 760 horas) |
+| Estaciones con datos válidos | 30 (station_0 a station_29) |
+| Estaciones sin datos | 20 (station_30 a station_49) |
+
+**Interpretación:**
+
+- El dataset resultante contiene **438 000 registros** (50 estaciones × 8 760 horas), un volumen representativo del reto Big Data propuesto.
+- Las **20 estaciones sin datos** (station_30 a station_49) corresponden a puntos del mallado de 0.1° que caen fuera del dominio espacial del archivo GRIB original (resolución 0.25°). La interpolación lineal no puede extrapolar más allá del borde del dominio, por lo que estos puntos son `null`. Este comportamiento es correcto y esperable.
+- La velocidad del viento a **100 m es sistemáticamente mayor** que a 10 m en todos los puntos, consistente con el perfil logarítmico del viento atmosférico: $u(z) \propto \ln(z/z_0)$, donde $z_0$ es la rugosidad superficial.
+- La región cubierta (norte de Asturias/León, coordenadas 42.8°N–43.2°N, 6.0°W–5.1°W) es una zona con orografía compleja y proximidad costera, lo que genera patrones de viento interesantes para el análisis eólico.
+
+#### 7. Testing
 
 Se implementan tests con `pytest` que validan:
 
@@ -117,7 +137,7 @@ Se implementan tests con `pytest` que validan:
 | `test_load_grib_data_in_batches` | Lectura completa del GRIB, existencia de columnas vectoriales, $ws \ge 0$, $0 \le wd \le 360$ |
 | `test_generated_parquet` | Integridad del Parquet generado: 50 estaciones únicas, validaciones físicas, ausencia de columnas completamente nulas |
 
-#### 7. Estructura de Código
+#### 8. Estructura de Código
 
 ```
 src/weather/
@@ -181,7 +201,24 @@ El pipeline genera dos archivos Parquet en `data/clean/`:
 | `all_stations_qc.parquet` | DataFrame corregido (438 000 filas × 18 cols) | `is_calm_10`, `is_calm_100` |
 | `station_qc_flags.parquet` | Flags de QC por estación (30 filas × 9 cols) | `chi2_*`, `max_sector_deviation_*`, `flagged_*` |
 
-#### 5. Testing
+#### 5. Interpretación de Resultados
+
+**Calmas y perfil vertical del viento:**
+
+- La proporción de calmas a 10 m (3.77%) es **3× mayor** que a 100 m (1.21%). Esto se explica por el perfil logarítmico del viento: la superficie terrestre genera fricción que frena el viento en las capas bajas, mientras que a mayor altura el flujo es más libre. En la zona estudiada (norte de España, orografía compleja), la capa límite atmosférica genera una diferencia especialmente marcada entre ambas alturas.
+- Un 3.77% de calmas a 10 m es un valor **bajo** comparado con estaciones continentales del interior, lo que sugiere que la influencia marítima y la canalización orográfica mantienen el viento en movimiento incluso a baja altura.
+
+**Consistencia sectorial:**
+
+- Solo **1 de 30 estaciones** (`station_25`) muestra una ligera inconsistencia sectorial a 10 m (ratio máximo 3.03, apenas por encima del umbral de 3.0), con un $\chi^2 = 6314$. Esto indica que la distribución de direcciones en esa estación no es uniforme, con un sector que acumula ~25% de las observaciones (vs. ~8.3% esperado en distribución uniforme).
+- A **100 m ninguna estación** es flaggeada, lo que confirma que el sesgo direccional observado a 10 m es un efecto de superficie (canalización por valles, sombras orográficas) que se disipa con la altura.
+- La baja tasa de flags (1/30 = 3.3%) indica que los datos ERA5 son de alta calidad en esta región, sin artefactos instrumentales significativos (esperable al tratarse de datos de reanálisis, no de estaciones físicas).
+
+**Datos faltantes:**
+
+- Las 20 estaciones sin datos no representan un problema de calidad sino una limitación geográfica del dominio GRIB. En un proyecto operacional se ajustaría el mallado para que todos los puntos queden dentro del dominio.
+
+#### 6. Testing
 
 Se implementan **28 tests unitarios** organizados en 4 clases:
 
@@ -192,7 +229,7 @@ Se implementan **28 tests unitarios** organizados en 4 clases:
 | `TestFlagSectorInconsistencies` | 5 | Distribución uniforme no flagged ($\chi^2 \approx 0$), distribución sesgada flagged ($\chi^2 \gg 0$), ratio máximo de desviación, tolerancia alta desactiva flag, multi-estación |
 | `TestRunQualityControl` | 7 | Retorno de dos DataFrames, columnas esperadas en flags, preservación de filas (sin eliminación), todas las estaciones reciben flags, parámetros personalizados, compatibilidad con 100 m |
 
-#### 6. Estructura de Código
+#### 7. Estructura de Código
 
 ```
 src/weather/
@@ -211,10 +248,174 @@ tests/
 └── test_quality.py           # 28 tests de control de calidad
 ```
 
-### Fase 3: Distribuciones de Weibull 🔲
+### Fase 3: Distribuciones de Weibull y Variabilidad Estacional ✅
 
-*Próximamente*: Ajuste por estación, variabilidad estacional.
+En esta fase se ajustan distribuciones de Weibull de dos parámetros a las series de velocidad del viento, tanto a nivel anual como estacional, y se analiza la variabilidad entre estaciones del año.
 
+#### 1. Distribución de Weibull
+
+La distribución de Weibull es el modelo estándar en energía eólica para caracterizar la frecuencia de velocidades del viento. Su función de densidad de probabilidad es:
+
+$$f(v) = \frac{k}{A} \left(\frac{v}{A}\right)^{k-1} \exp\left[-\left(\frac{v}{A}\right)^k\right]$$
+
+donde:
+
+- $k$ (forma): describe la amplitud de la distribución. Valores típicos: 1.5–3.0
+- $A$ (escala): relacionado con la velocidad media del viento (m/s)
+
+El ajuste se realiza por **Máxima Verosimilitud (MLE)** usando `scipy.stats.weibull_min` con parámetro de localización fijado a cero (`floc=0`), como requiere la Weibull de dos parámetros.
+
+#### 2. Ajuste Anual por Estación
+
+Para cada una de las 50 localizaciones se ajusta una distribución Weibull a la serie completa de velocidades. Se excluyen automáticamente las observaciones nulas y las calmas ($v = 0$). Se requiere un mínimo de 10 observaciones válidas para intentar el ajuste.
+
+El resultado incluye para cada estación:
+
+| Columna | Descripción |
+|---------|-------------|
+| `weibull_k` | Parámetro de forma |
+| `weibull_A` | Parámetro de escala (m/s) |
+| `mean_ws` | Velocidad media observada (m/s) |
+| `std_ws` | Desviación típica de la velocidad |
+| `n_obs` | Número de observaciones válidas |
+
+#### 3. Clasificación Estacional
+
+Se asigna a cada observación una estación meteorológica según la convención estándar:
+
+| Estación | Meses | Código |
+|----------|-------|--------|
+| Invierno | Diciembre, Enero, Febrero | DJF |
+| Primavera | Marzo, Abril, Mayo | MAM |
+| Verano | Junio, Julio, Agosto | JJA |
+| Otoño | Septiembre, Octubre, Noviembre | SON |
+
+#### 4. Ajuste Estacional por Estación
+
+Para cada combinación estación × estación meteorológica (4 estaciones × N localizaciones) se ajusta una distribución Weibull independiente. Esto permite detectar:
+
+- Estaciones del año con mayor recurso eólico (mayor $A$)
+- Variaciones en la forma de la distribución ($k$) entre estaciones
+- Localizaciones con viento estable (baja variabilidad) vs. irregular (alta variabilidad)
+
+#### 5. Métricas de Variabilidad Estacional
+
+Para cada localización se calculan las siguientes métricas que resumen la variabilidad del recurso eólico a lo largo del año:
+
+| Métrica | Descripción |
+|---------|-------------|
+| `cv_k` | Coeficiente de Variación de $k$: $\text{std}(k) / \text{mean}(k)$ |
+| `cv_A` | Coeficiente de Variación de $A$: $\text{std}(A) / \text{mean}(A)$ |
+| `range_k` | Rango de $k$ entre estaciones ($\max - \min$) |
+| `range_A` | Rango de $A$ entre estaciones (m/s) |
+| `best_season` | Estación con mayor $A$ (viento más fuerte) |
+| `worst_season` | Estación con menor $A$ (viento más débil) |
+| `n_seasons_fitted` | Número de estaciones con ajuste exitoso |
+
+> Un CV bajo de $A$ indica un recurso eólico estable a lo largo del año, lo cual es deseable para la generación eólica continua. Un CV alto sugiere marcada estacionalidad.
+
+#### 6. Datos de Salida
+
+El pipeline genera tres archivos Parquet por nivel de altura en `data/results/`:
+
+| Archivo | Contenido |
+|---------|-----------|
+| `weibull_annual_{h}m.parquet` | Ajustes Weibull anuales por estación |
+| `weibull_seasonal_{h}m.parquet` | Ajustes Weibull por estación y estación del año |
+| `weibull_variability_{h}m.parquet` | Métricas de variabilidad estacional |
+
+#### 7. Resultados del Pipeline
+
+##### Ajuste Anual
+
+| Métrica | 10 m | 100 m |
+|---------|------|-------|
+| Estaciones con ajuste exitoso | 30/50 | 30/50 |
+| $k$ medio (forma) | 1.603 | 1.649 |
+| $k$ rango | [1.442, 1.744] | [1.513, 1.773] |
+| $A$ medio (escala) | 2.462 m/s | 4.054 m/s |
+| $A$ rango | [2.228, 2.752] m/s | [3.740, 4.468] m/s |
+| Velocidad media | [1.995, 2.444] m/s | [3.334, 3.970] m/s |
+
+##### Ajuste Estacional
+
+| Estación del año | $k$ medio (10 m) | $A$ medio (10 m) | $k$ medio (100 m) | $A$ medio (100 m) |
+|------------------|-------------------|-------------------|--------------------|-----------------|
+| DJF (Invierno) | 1.559 | 2.627 m/s | 1.681 | 4.618 m/s |
+| MAM (Primavera) | 1.627 | 2.513 m/s | 1.686 | 4.070 m/s |
+| JJA (Verano) | 1.959 | 2.085 m/s | 2.121 | 3.163 m/s |
+| SON (Otoño) | 1.528 | 2.628 m/s | 1.576 | 4.390 m/s |
+
+##### Variabilidad Estacional
+
+| Métrica | 10 m | 100 m |
+|---------|------|-------|
+| CV de $A$ (media) | 0.093 | 0.138 |
+| CV de $A$ (rango) | [0.069, 0.120] | [0.103, 0.171] |
+| Rango $A$ medio | 0.590 m/s | 1.466 m/s |
+| Mejor estación (más frecuente) | DJF (16) / SON (14) | DJF (27) / SON (3) |
+| Peor estación (unánime) | JJA (30/30) | JJA (30/30) |
+
+#### 8. Interpretación de Resultados
+
+**Parámetro de forma $k$ y régimen de vientos:**
+
+- Los valores de $k$ entre **1.4 y 1.8** son relativamente bajos comparados con los típicos de sitios eólicos óptimos ($k \approx 2.0$–$2.5$). Un $k$ bajo indica una distribución de velocidades con cola pesada: hay una proporción significativa tanto de calmas como de rachas fuertes. Esto es típico de zonas con **orografía compleja** como el norte de España, donde las montañas generan turbulencia y variabilidad local.
+- En **verano (JJA)** el parámetro $k$ sube a **1.96–2.12**, indicando un régimen de vientos más estable y predecible, asociado a las brisas térmicas diurnas y la menor actividad ciclónica.
+- A **100 m** los valores de $k$ son ligeramente superiores (1.65 vs 1.60), reflejando que el viento es más regular al alejarse de la superficie y sus perturbaciones.
+
+**Parámetro de escala $A$ y recurso eólico:**
+
+- La escala $A$ a 100 m (**4.05 m/s**) es un **65% mayor** que a 10 m (**2.46 m/s**), consistente con la ley de potencia del perfil vertical: $u(z_2)/u(z_1) = (z_2/z_1)^\alpha$ con $\alpha \approx 0.2$ para terreno moderadamente rugoso, lo que predice un ratio de $(100/10)^{0.2} \approx 1.58$, muy próximo al observado.
+- Los valores de $A$ son **moderados-bajos** para aplicaciones eólicas. Los mejores emplazamientos europeos presentan $A > 8$–$10$ m/s a 100 m. Sin embargo, debe tenerse en cuenta que los datos ERA5 tienden a **subestimar** las velocidades en zonas de orografía compleja, ya que el modelo suaviza los picos topográficos.
+
+**Estacionalidad:**
+
+- **Invierno (DJF) y otoño (SON)** son las estaciones con mayor recurso eólico (mayor $A$), dominadas por los frentes atlánticos y las borrascas extratropicales que cruzan la península de oeste a este.
+- **Verano (JJA)** es unánimemente la peor estación en las 30 localizaciones, con una reducción del 25% en $A$ a 10 m y del 32% a 100 m respecto al invierno. Esto coincide con el anticiclón de las Azores, que inhibe la actividad ciclónica sobre la península ibérica en verano.
+- A 100 m, el invierno domina de forma más clara (**27/30** estaciones vs. 16/30 a 10 m), indicando que a mayor altura los patrones sinópticos de gran escala (borrascas invernales) predominan sobre los efectos locales (brisas, canalización).
+
+**Variabilidad y estabilidad del recurso:**
+
+- El CV de $A$ a 10 m es **0.093** (9.3%), un valor bajo que indica un recurso relativamente estable a lo largo del año. A 100 m el CV sube a **0.138** (13.8%), lo que puede parecer contradictorio pero se explica porque a mayor altura los contrastes estacionales sinópticos se amplifican (más viento invernal, más calma estival), mientras que a 10 m la orografía local amortigua estos contrastes.
+- El rango de $A$ entre estaciones es de **0.59 m/s** a 10 m y **1.47 m/s** a 100 m, confirmando que la variabilidad estacional absoluta crece con la altura.
+
+#### 9. Testing
+
+Se implementan **60 tests unitarios** organizados en 7 clases:
+
+| Clase de test | Tests | Qué verifica |
+|---------------|-------|-------------|
+| `TestFitWeibull` | 8 | Recuperación de parámetros conocidos, positividad, mínimo de observaciones, array vacío, distribuciones uniformes y estrechas |
+| `TestFitWeibullByStation` | 12 | Una fila por estación, columnas esperadas, ajuste en estaciones válidas, `None` en estaciones nulas, parámetros razonables, media coherente, nombres de columna personalizados, orden |
+| `TestAddSeasonColumn` | 7 | Columna añadida, preservación de columnas originales, mapeo correcto de meses, diciembre = DJF, solo 4 estaciones, error si falta columna |
+| `TestFitWeibullByStationAndSeason` | 10 | 4 estaciones por localización, parámetros diferentes entre estaciones, invierno > verano, estaciones nulas con `None`, 100 obs por estación, multi-estación |
+| `TestComputeSeasonalVariability` | 12 | CV positivo, rango positivo, mejor estación = DJF, peor = JJA, 4 estaciones ajustadas, exclusión de nulos, resultado vacío si todo falla, CV ≈ 0 para viento constante |
+| `TestRunWeibullAnalysis` | 6 | Tres DataFrames de salida, conteo correcto de filas, exclusión de estaciones nulas, consistencia entre outputs, columna personalizada |
+| `TestConstants` | 4 | Cobertura de meses 1–12, valores válidos, 4 estaciones únicas |
+
+#### 10. Estructura de Código
+
+```
+src/weather/
+├── data/
+│   ├── __init__.py
+│   ├── load.py              # (Fase 1) Ingestión GRIB
+│   ├── quality.py           # (Fase 2) Control de calidad
+│   └── weibull.py           # fit_weibull(), fit_weibull_by_station(),
+│                             # add_season_column(), fit_weibull_by_station_and_season(),
+│                             # compute_seasonal_variability(), run_weibull_analysis()
+└── pipelines/
+    ├── __init__.py
+    ├── ingest.py             # (Fase 1) run_ingestion()
+    ├── qc.py                 # (Fase 2) run_qc()
+    └── weibull.py            # run_weibull_pipeline() → lee QC Parquet, ajusta Weibull, genera resultados
+
+tests/
+├── test_load.py              # (Fase 1) 4 tests
+├── test_quality.py           # (Fase 2) 28 tests
+└── test_weibull.py           # 60 tests de Weibull y variabilidad estacional
+```
 ### Fase 4: Producción Energética (AEP) 🔲
 
 *Próximamente*: Curvas de potencia reales, ranking de localizaciones.
