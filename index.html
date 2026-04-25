@@ -488,10 +488,82 @@
   <a href="#fase-2-control-de-calidad" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fase 2: Control de Calidad 🔲
+        Fase 2: Control de Calidad ✅
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Fase 2: Control de Calidad ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-calm-corrections-correccion-de-calmas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Calm Corrections (Corrección de Calmas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sector-consistency-consistencia-sectorial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Sector Consistency (Consistencia Sectorial)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tratamiento-de-datos-faltantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tratamiento de Datos Faltantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-datos-de-salida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Datos de Salida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Estructura de Código
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -787,10 +859,82 @@
   <a href="#fase-2-control-de-calidad" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fase 2: Control de Calidad 🔲
+        Fase 2: Control de Calidad ✅
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Fase 2: Control de Calidad ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-calm-corrections-correccion-de-calmas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Calm Corrections (Corrección de Calmas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sector-consistency-consistencia-sectorial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Sector Consistency (Consistencia Sectorial)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tratamiento-de-datos-faltantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tratamiento de Datos Faltantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-datos-de-salida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Datos de Salida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Estructura de Código
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1026,8 +1170,153 @@
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>tests/
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>└── test_load.py              # 4 tests unitarios y de integración
 </code></pre></div>
-<h3 id="fase-2-control-de-calidad">Fase 2: Control de Calidad 🔲<a class="headerlink" href="#fase-2-control-de-calidad" title="Permanent link">&para;</a></h3>
-<p><em>Próximamente</em>: Calm corrections, sector consistency, detección de outliers.</p>
+<h3 id="fase-2-control-de-calidad">Fase 2: Control de Calidad ✅<a class="headerlink" href="#fase-2-control-de-calidad" title="Permanent link">&para;</a></h3>
+<p>En esta fase se implementa un control de calidad específico para datos de viento, siguiendo las recomendaciones de la Organización Meteorológica Mundial (OMM). Se aplican dos técnicas complementarias: <strong>calm corrections</strong> y <strong>sector consistency</strong>.</p>
+<h4 id="1-calm-corrections-correccion-de-calmas">1. Calm Corrections (Corrección de Calmas)<a class="headerlink" href="#1-calm-corrections-correccion-de-calmas" title="Permanent link">&para;</a></h4>
+<p>Cuando la velocidad del viento cae por debajo de un umbral configurable (por defecto 0.5 m/s, criterio OMM), la dirección del viento asociada no tiene significado físico — la veleta no se orienta con vientos tan débiles. En estos casos:</p>
+<ul>
+<li>La dirección del viento (<code>wd10</code>, <code>wd100</code>) se establece a <code>null</code></li>
+<li>Se añade una columna booleana <code>is_calm_10</code> / <code>is_calm_100</code> para facilitar el filtrado posterior</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Nivel de altura</th>
+<th>Calmas detectadas</th>
+<th>Porcentaje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 m</td>
+<td>16 497</td>
+<td>3.77 %</td>
+</tr>
+<tr>
+<td>100 m</td>
+<td>5 283</td>
+<td>1.21 %</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Las calmas son más frecuentes a 10 m que a 100 m, lo cual es coherente con el perfil logarítmico del viento: a mayor altura, mayor velocidad media.</p>
+</blockquote>
+<h4 id="2-sector-consistency-consistencia-sectorial">2. Sector Consistency (Consistencia Sectorial)<a class="headerlink" href="#2-sector-consistency-consistencia-sectorial" title="Permanent link">&para;</a></h4>
+<p>La rosa de vientos se divide en $N$ sectores iguales (por defecto 12, de 30° cada uno). Para cada estación se calcula la frecuencia relativa de direcciones por sector y se compara con la distribución uniforme esperada ($1/N$):</p>
+<ul>
+<li><strong>Ratio de desviación</strong> por sector: $r_i = f_i \cdot N$, donde $f_i$ es la frecuencia observada en el sector $i$</li>
+<li><strong>Chi-cuadrado de Pearson</strong>: $\chi^2 = N_{\mathrm{obs}} \cdot \sum_{i=1}^{N} \frac{(f_i - 1/N)^2}{1/N}$</li>
+<li><strong>Flagged</strong>: una estación se marca como potencialmente problemática si algún sector tiene $r_i &gt; 3.0$</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Nivel de altura</th>
+<th>Estaciones flagged</th>
+<th>Estación</th>
+<th>$\chi^2$</th>
+<th>Max desviación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 m</td>
+<td>1</td>
+<td><code>station_25</code></td>
+<td>6 314.1</td>
+<td>3.03</td>
+</tr>
+<tr>
+<td>100 m</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>station_25</code> presenta una distribución sectorial ligeramente sesgada a 10 m (ratio máximo 3.03), lo que puede indicar efectos de orografía local. A 100 m la distribución se normaliza.</p>
+</blockquote>
+<h4 id="3-tratamiento-de-datos-faltantes">3. Tratamiento de Datos Faltantes<a class="headerlink" href="#3-tratamiento-de-datos-faltantes" title="Permanent link">&para;</a></h4>
+<p>De las 50 localizaciones originales, <strong>20 estaciones</strong> (station_30 a station_49) tienen datos completamente nulos — se encuentran en el borde del dominio del archivo GRIB y la interpolación lineal no puede extrapolar. El pipeline las trata correctamente:</p>
+<ul>
+<li><code>is_calm</code> = <code>null</code> (no se puede determinar si es calma sin dato de velocidad)</li>
+<li>Excluidas automáticamente del análisis de consistencia sectorial</li>
+</ul>
+<h4 id="4-datos-de-salida">4. Datos de Salida<a class="headerlink" href="#4-datos-de-salida" title="Permanent link">&para;</a></h4>
+<p>El pipeline genera dos archivos Parquet en <code>data/clean/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Contenido</th>
+<th>Columnas añadidas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>all_stations_qc.parquet</code></td>
+<td>DataFrame corregido (438 000 filas × 18 cols)</td>
+<td><code>is_calm_10</code>, <code>is_calm_100</code></td>
+</tr>
+<tr>
+<td><code>station_qc_flags.parquet</code></td>
+<td>Flags de QC por estación (30 filas × 9 cols)</td>
+<td><code>chi2_*</code>, <code>max_sector_deviation_*</code>, <code>flagged_*</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="5-testing">5. Testing<a class="headerlink" href="#5-testing" title="Permanent link">&para;</a></h4>
+<p>Se implementan <strong>28 tests unitarios</strong> organizados en 4 clases:</p>
+<table>
+<thead>
+<tr>
+<th>Clase de test</th>
+<th>Tests</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TestApplyCalmCorrections</code></td>
+<td>10</td>
+<td>Nullificación de dirección en calmas, preservación de no-calmas, flag <code>is_calm</code>, umbrales extremos (0 y ∞), validación de errores (threshold negativo, columnas ausentes), inmutabilidad del DataFrame original, nombres de columna personalizados</td>
+</tr>
+<tr>
+<td><code>TestComputeSectorFrequencies</code></td>
+<td>6</td>
+<td>Distribución uniforme perfecta → freq = 1/12, rango de sectores [0, N), suma de frecuencias = 1 por estación, exclusión de direcciones nulas, wrap 360° → sector 0, sectores personalizados (4 cuadrantes)</td>
+</tr>
+<tr>
+<td><code>TestFlagSectorInconsistencies</code></td>
+<td>5</td>
+<td>Distribución uniforme no flagged ($\chi^2 \approx 0$), distribución sesgada flagged ($\chi^2 \gg 0$), ratio máximo de desviación, tolerancia alta desactiva flag, multi-estación</td>
+</tr>
+<tr>
+<td><code>TestRunQualityControl</code></td>
+<td>7</td>
+<td>Retorno de dos DataFrames, columnas esperadas en flags, preservación de filas (sin eliminación), todas las estaciones reciben flags, parámetros personalizados, compatibilidad con 100 m</td>
+</tr>
+</tbody>
+</table>
+<h4 id="6-estructura-de-codigo">6. Estructura de Código<a class="headerlink" href="#6-estructura-de-codigo" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>src/weather/
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>├── data/
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├── __init__.py
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│   ├── load.py              # (Fase 1) Ingestión GRIB
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│   └── quality.py           # apply_calm_corrections(), compute_sector_frequencies(),
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│                             # flag_sector_inconsistencies(), run_quality_control()
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>└── pipelines/
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    ├── __init__.py
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    ├── ingest.py             # (Fase 1) run_ingestion()
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    └── qc.py                 # run_qc() → lee Parquet staging, aplica QC, genera salida
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>tests/
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>├── test_load.py              # (Fase 1) 4 tests
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>└── test_quality.py           # 28 tests de control de calidad
+</code></pre></div>
 <h3 id="fase-3-distribuciones-de-weibull">Fase 3: Distribuciones de Weibull 🔲<a class="headerlink" href="#fase-3-distribuciones-de-weibull" title="Permanent link">&para;</a></h3>
 <p><em>Próximamente</em>: Ajuste por estación, variabilidad estacional.</p>
 <h3 id="fase-4-produccion-energetica-aep">Fase 4: Producción Energética (AEP) 🔲<a class="headerlink" href="#fase-4-produccion-energetica-aep" title="Permanent link">&para;</a></h3>
