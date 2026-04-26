@@ -416,9 +416,62 @@ tests/
 ├── test_quality.py           # (Fase 2) 28 tests
 └── test_weibull.py           # 60 tests de Weibull y variabilidad estacional
 ```
-### Fase 4: Producción Energética (AEP) 🔲
+### Fase 4: Producción Energética (AEP) ✅
 
-*Próximamente*: Curvas de potencia reales, ranking de localizaciones.
+En esta fase se implementa el cálculo de la Producción Energética Anual (AEP, por sus siglas en inglés) para cada estación, aplicando curvas de potencia de aerogeneradores reales.
+
+#### 1. Curva de Potencia
+
+Se utiliza como referencia una curva de potencia estándar para un aerogenerador de **2.0 MW** (ej. equivalente a un modelo Vestas V90 típico de clase IEC baja/media), modelada numéricamente con los siguientes hitos operativos:
+
+- **Cut-in wind speed**: 4 m/s (velocidad de arranque)
+- **Rated wind speed**: ~12-13 m/s (velocidad nominal para alcanzar la máxima potencia de 2000 kW)
+- **Cut-out wind speed**: 25 m/s (velocidad de parada por seguridad)
+
+#### 2. Metodología de Cálculo
+
+Se evalúa la energía generada mediante dos enfoques complementarios ("Reto Big Data"):
+
+- **AEP Teórico (CDF Vectorizado)**: Calcula la energía integrando la curva de potencia sobre la distribución de Weibull paramétrica ajustada en la Fase 3. Para un alto rendimiento masivo, se vectoriza sobre todas las estaciones empleando la Función de Distribución Acumulada (CDF) de Weibull de forma analítica en tramos definidos por la curva de potencia ($Prob = CDF(v_{sup}) - CDF(v_{inf})$).
+- **AEP Empírico (Time-Series Asof Join)**: Mapea la serie temporal hora a hora usando cruces de proximidad masivos (`join_asof` en Polars con estrategia `nearest`), emparejando eficientemente la velocidad horaria con el valor de potencia más cercano y promediando anualmente sobre la serie original.
+
+Ambos resultados se agregan y se reescalan de kW a GWh considerando las 8760 horas del año estándar.
+
+#### 3. Resultados y Ranking de Localizaciones
+
+Se genera un ranking (`rank_locations`) para ordenar descendentemente las localizaciones en función de su AEP Teórico e identificar los puntos geográficos de la muestra con mayor potencial para albergar un parque eólico comercial. 
+
+| Ranking | Estación | Altura | AEP Teórico | AEP Empírico | k (forma) | A (escala) |
+|---------|----------|--------|-------------|--------------|-----------|------------|
+| 1 | `station_7` | 100 m | 1.36 GWh | 1.38 GWh | 1.72 | 4.45 m/s |
+| 2 | `station_8` | 100 m | 1.35 GWh | 1.38 GWh | 1.74 | 4.47 m/s |
+| 3 | `station_6` | 100 m | 1.32 GWh | 1.34 GWh | 1.69 | 4.37 m/s |
+
+> **Nota de Análisis:** El AEP para turbinas de 2.0 MW en estas zonas con un perfil de viento $A \approx 4.45$ m/s arroja una producción anual en torno a 1.36 GWh (Factor de capacidad ~7.7%). Estos valores, aunque físicamente correctos de acuerdo a la ecuación de potencia, sugieren recursos moderados debido a las mallas del modelo ERA5 en el interior montañoso, que suaviza extremos. Hay gran concordancia entre los cálculos empíricos directos y los teóricos usando los ajustes estadísticos MLE de la Fase 3.
+
+#### 4. Testing
+
+Se implementan tests unitarios específicos (`pytest`) verificando la consistencia operativa:
+
+| Test | Qué verifica |
+|------|-------------|
+| `test_reference_power_curve` | Límites operativos (0 debajo cut-in y por encima cut-out, y límite max 2000 kW) |
+| `test_calculate_aep_vectorized_cdf` | Propagación correcta de nulos (`np.nan`) en vectorización matemática de Numpy |
+| `test_compute_theoretical_aep` | Validar AEP escalar ascendente con escalas (A) de Weibull mayores y manejo de `null` en Polars |
+| `test_compute_empirical_aep` | Agregación del time series mock mediante Polars `join_asof` sin fallos y limitación frente a nulos |
+
+#### 5. Estructura de Código
+
+```
+src/weather/
+├── data/
+│   ├── aep.py               # get_reference_power_curve(), compute_theoretical_aep(), 
+│                             # compute_empirical_aep(), rank_locations()
+└── pipelines/
+    └── aep.py               # run_aep_pipeline() → Lee distribuciones y temporales, une y evalua
+tests/
+└── test_aep.py              # Validaciones para cálculos AEP vectorizados y asof joins
+```
 
 ### Fase 5: Visualización 🔲
 
