@@ -83,8 +83,16 @@ def run_aep_pipeline(
         print("Ranking Top 5 Estaciones (Teórico GWh):")
         top_5 = final_aep.head(5)
         for row in top_5.iter_rows(named=True):
-            theo = f"{row['theoretical_aep_gwh']:.2f}" if row['theoretical_aep_gwh'] is not None else "N/A"
-            emp = f"{row['empirical_aep_gwh']:.2f}" if row['empirical_aep_gwh'] is not None else "N/A"
+            theo = (
+                f"{row['theoretical_aep_gwh']:.2f}"
+                if row["theoretical_aep_gwh"] is not None
+                else "N/A"
+            )
+            emp = (
+                f"{row['empirical_aep_gwh']:.2f}"
+                if row["empirical_aep_gwh"] is not None
+                else "N/A"
+            )
             print(
                 f"  {row['rank']}. {row['station']}: "
                 f"{theo} GWh (Empírico: {emp} GWh) "

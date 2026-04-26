@@ -41,7 +41,7 @@ Datos horarios de alta frecuencia (alto volumen), ajuste de distribuciones por m
 
 ## Fases del Proyecto
 
-### Fase 1: Lectura e Ingestión de Datos ✅
+### Fase 1: Lectura e Ingestión de Datos 
 
 En esta fase nos centramos en la lectura y procesamiento por lotes (*batch*) de un archivo GRIB proveniente de Copernicus Climate Data Store (ERA5).
 
@@ -152,7 +152,7 @@ tests/
 └── test_load.py              # 4 tests unitarios y de integración
 ```
 
-### Fase 2: Control de Calidad ✅
+### Fase 2: Control de Calidad 
 
 En esta fase se implementa un control de calidad específico para datos de viento, siguiendo las recomendaciones de la Organización Meteorológica Mundial (OMM). Se aplican dos técnicas complementarias: **calm corrections** y **sector consistency**.
 
@@ -248,7 +248,7 @@ tests/
 └── test_quality.py           # 28 tests de control de calidad
 ```
 
-### Fase 3: Distribuciones de Weibull y Variabilidad Estacional ✅
+### Fase 3: Distribuciones de Weibull y Variabilidad Estacional 
 
 En esta fase se ajustan distribuciones de Weibull de dos parámetros a las series de velocidad del viento, tanto a nivel anual como estacional, y se analiza la variabilidad entre estaciones del año.
 
@@ -416,7 +416,7 @@ tests/
 ├── test_quality.py           # (Fase 2) 28 tests
 └── test_weibull.py           # 60 tests de Weibull y variabilidad estacional
 ```
-### Fase 4: Producción Energética (AEP) ✅
+### Fase 4: Producción Energética (AEP) 
 
 En esta fase se implementa el cálculo de la Producción Energética Anual (AEP, por sus siglas en inglés) para cada estación, aplicando curvas de potencia de aerogeneradores reales.
 
@@ -473,9 +473,47 @@ tests/
 └── test_aep.py              # Validaciones para cálculos AEP vectorizados y asof joins
 ```
 
-### Fase 5: Visualización 🔲
+### Fase 5: Visualización 
 
-*Próximamente*: Rosas de viento interactivas, mapas de potencial eólico.
+En esta fase final, los resultados del análisis se transforman en representaciones visuales interactivas para facilitar la toma de decisiones, apoyándose en librerías punteras como **Plotly** y **Folium**.
+
+#### 1. Mapas de Potencial Eólico (Folium)
+
+Se ha implementado un mapa geoespacial interactivo (`create_potential_map`) que representa el potencial eólico (AEP) calculado a 100 metros de altura en el norte de España:
+
+- **Cartografía base:** "CartoDB positron" para un estilo limpio que resalta los datos superpuestos.
+- **Renderizado Dinámico:** Se añaden `CircleMarker` en las coordenadas exactas de cada estación del mallado, con un código de colores (escala lineal de azul a rojo) asociado al rango de AEP Teórico.
+- **Tooltips y Popups Interactivos:** Al hacer hover o clic en cada punto, se despliega una ficha técnica con: 
+  - Estación y su ranking regional.
+  - AEP Teórico y Empírico (GWh).
+  - Parámetros estadísticos de Weibull subyacentes ($k$, $A$).
+
+#### 2. Rosas de Viento Interactivas (Plotly)
+
+Para comprender la direccionalidad y distribución de velocidades en los puntos más óptimos, se ha automatizado la generación de Rosas de Viento (`plot_wind_rose`) para las estaciones top del ranking:
+
+- **Agrupación en Polars:** Los millones de registros originales del dataset se agrupan vectorialmente (`group_by` y `when/then`) en **16 sectores direccionales** (N, NNE, NE...) y en tramos de velocidad (0-4, 4-8... >20 m/s).
+- **Gráficos Polares (Bar Polar):** Plotly genera un gráfico interactivo (`px.bar_polar`) donde el radio es la frecuencia observada (%), el ángulo es la dirección de proveniencia del viento, y el color codifica el rango de velocidades.
+- **Interactividad:** Permite silenciar o aislar ciertos rangos de velocidad al hacer clic en la leyenda, haciendo un *zoom* direccional.
+
+#### 3. Estructura de Código
+
+```
+src/weather/
+├── visualization/
+│   ├── maps.py              # attach_coordinates(), create_potential_map()
+│   └── wind_rose.py         # compute_wind_rose_data(), plot_wind_rose()
+└── pipelines/
+    └── visualize.py         # run_visualization_pipeline() → Genera HTMLs
+tests/
+└── test_visualize.py        # Validación de aserciones de gráficas y mapas
+```
+
+> **Outputs Generados:** Todas las gráficas han sido renderizadas y exportadas dinámicamente como archivos HTML enriquecidos en `docs/visuals/`.
+
+## Conclusión
+
+Este pipeline de principio a fin ha demostrado el poder de herramientas modernas de **Big Data** (Polars, Xarray, Parquet) integradas en Python, para resolver desde la ingesta de pesados reanálisis meteorológicos en GRIB, hasta modelos probabilísticos avanzados de energía y su diseminación geoespacial final.
 
 ## Alumno
 

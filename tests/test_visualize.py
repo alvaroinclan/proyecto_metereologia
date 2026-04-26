@@ -1,0 +1,71 @@
+import folium
+import plotly.graph_objects as go
+import polars as pl
+
+from weather.visualization.maps import attach_coordinates, create_potential_map
+from weather.visualization.wind_rose import compute_wind_rose_data, plot_wind_rose
+
+
+def test_compute_wind_rose_data():
+    df = pl.DataFrame(
+        {
+            "ws10": [0.0, 5.0, 9.0, 15.0, 25.0, None],
+            "wd10": [0.0, 90.0, 180.0, 270.0, 359.0, 0.0],
+        }
+    )
+
+    rose = compute_wind_rose_data(df)
+
+    assert rose.height > 0
+    assert "direction" in rose.columns
+    assert "speed_bin" in rose.columns
+    assert "frequency_pct" in rose.columns
+
+    # Check that percentage sums to roughly 100%
+    assert 99.0 <= rose["frequency_pct"].sum() <= 101.0
+
+
+def test_plot_wind_rose():
+    df = pl.DataFrame(
+        {
+            "direction": ["N", "E", "S", "W"],
+            "speed_bin": ["0-4", "4-8", "8-12", "12-16"],
+            "frequency_pct": [25.0, 25.0, 25.0, 25.0],
+        }
+    )
+    fig = plot_wind_rose(df)
+    assert isinstance(fig, go.Figure)
+
+
+def test_attach_coordinates():
+    df = pl.DataFrame({"station": ["station_0", "station_49", "unknown_station"]})
+    res = attach_coordinates(df)
+
+    assert "latitude" in res.columns
+    assert "longitude" in res.columns
+    assert res.filter(pl.col("station") == "station_0")["latitude"].is_not_null()[0]
+    assert res.filter(pl.col("station") == "unknown_station")["latitude"].is_null()[0]
+
+
+def test_create_potential_map():
+    df = pl.DataFrame(
+        {
+            "station": ["station_0", "station_1"],
+            "theoretical_aep_gwh": [1.0, 2.0],
+            "latitude": [43.0, 43.1],
+            "longitude": [-5.5, -5.6],
+        }
+    )
+
+    m = create_potential_map(df)
+    assert isinstance(m, folium.Map)
+
+    # Test without coordinates automatically attaching them
+    df_no_coords = pl.DataFrame(
+        {
+            "station": ["station_0", "station_1"],
+            "theoretical_aep_gwh": [1.0, 2.0],
+        }
+    )
+    m2 = create_potential_map(df_no_coords)
+    assert isinstance(m2, folium.Map)
