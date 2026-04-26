@@ -759,10 +759,71 @@
   <a href="#fase-4-produccion-energetica-aep" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fase 4: Producción Energética (AEP) 🔲
+        Fase 4: Producción Energética (AEP) ✅
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Fase 4: Producción Energética (AEP) ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-curva-de-potencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Curva de Potencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-metodologia-de-calculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Metodología de Cálculo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-resultados-y-ranking-de-localizaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Resultados y Ranking de Localizaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Estructura de Código
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1307,10 +1368,71 @@
   <a href="#fase-4-produccion-energetica-aep" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fase 4: Producción Energética (AEP) 🔲
+        Fase 4: Producción Energética (AEP) ✅
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Fase 4: Producción Energética (AEP) ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-curva-de-potencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Curva de Potencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-metodologia-de-calculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Metodología de Cálculo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-resultados-y-ranking-de-localizaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Resultados y Ranking de Localizaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Estructura de Código
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2094,8 +2216,107 @@
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>├── test_quality.py           # (Fase 2) 28 tests
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>└── test_weibull.py           # 60 tests de Weibull y variabilidad estacional
 </code></pre></div>
-<h3 id="fase-4-produccion-energetica-aep">Fase 4: Producción Energética (AEP) 🔲<a class="headerlink" href="#fase-4-produccion-energetica-aep" title="Permanent link">&para;</a></h3>
-<p><em>Próximamente</em>: Curvas de potencia reales, ranking de localizaciones.</p>
+<h3 id="fase-4-produccion-energetica-aep">Fase 4: Producción Energética (AEP) ✅<a class="headerlink" href="#fase-4-produccion-energetica-aep" title="Permanent link">&para;</a></h3>
+<p>En esta fase se implementa el cálculo de la Producción Energética Anual (AEP, por sus siglas en inglés) para cada estación, aplicando curvas de potencia de aerogeneradores reales.</p>
+<h4 id="1-curva-de-potencia">1. Curva de Potencia<a class="headerlink" href="#1-curva-de-potencia" title="Permanent link">&para;</a></h4>
+<p>Se utiliza como referencia una curva de potencia estándar para un aerogenerador de <strong>2.0 MW</strong> (ej. equivalente a un modelo Vestas V90 típico de clase IEC baja/media), modelada numéricamente con los siguientes hitos operativos:</p>
+<ul>
+<li><strong>Cut-in wind speed</strong>: 4 m/s (velocidad de arranque)</li>
+<li><strong>Rated wind speed</strong>: ~12-13 m/s (velocidad nominal para alcanzar la máxima potencia de 2000 kW)</li>
+<li><strong>Cut-out wind speed</strong>: 25 m/s (velocidad de parada por seguridad)</li>
+</ul>
+<h4 id="2-metodologia-de-calculo">2. Metodología de Cálculo<a class="headerlink" href="#2-metodologia-de-calculo" title="Permanent link">&para;</a></h4>
+<p>Se evalúa la energía generada mediante dos enfoques complementarios ("Reto Big Data"):</p>
+<ul>
+<li><strong>AEP Teórico (CDF Vectorizado)</strong>: Calcula la energía integrando la curva de potencia sobre la distribución de Weibull paramétrica ajustada en la Fase 3. Para un alto rendimiento masivo, se vectoriza sobre todas las estaciones empleando la Función de Distribución Acumulada (CDF) de Weibull de forma analítica en tramos definidos por la curva de potencia ($Prob = CDF(v_{sup}) - CDF(v_{inf})$).</li>
+<li><strong>AEP Empírico (Time-Series Asof Join)</strong>: Mapea la serie temporal hora a hora usando cruces de proximidad masivos (<code>join_asof</code> en Polars con estrategia <code>nearest</code>), emparejando eficientemente la velocidad horaria con el valor de potencia más cercano y promediando anualmente sobre la serie original.</li>
+</ul>
+<p>Ambos resultados se agregan y se reescalan de kW a GWh considerando las 8760 horas del año estándar.</p>
+<h4 id="3-resultados-y-ranking-de-localizaciones">3. Resultados y Ranking de Localizaciones<a class="headerlink" href="#3-resultados-y-ranking-de-localizaciones" title="Permanent link">&para;</a></h4>
+<p>Se genera un ranking (<code>rank_locations</code>) para ordenar descendentemente las localizaciones en función de su AEP Teórico e identificar los puntos geográficos de la muestra con mayor potencial para albergar un parque eólico comercial. </p>
+<table>
+<thead>
+<tr>
+<th>Ranking</th>
+<th>Estación</th>
+<th>Altura</th>
+<th>AEP Teórico</th>
+<th>AEP Empírico</th>
+<th>k (forma)</th>
+<th>A (escala)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>station_7</code></td>
+<td>100 m</td>
+<td>1.36 GWh</td>
+<td>1.38 GWh</td>
+<td>1.72</td>
+<td>4.45 m/s</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>station_8</code></td>
+<td>100 m</td>
+<td>1.35 GWh</td>
+<td>1.38 GWh</td>
+<td>1.74</td>
+<td>4.47 m/s</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>station_6</code></td>
+<td>100 m</td>
+<td>1.32 GWh</td>
+<td>1.34 GWh</td>
+<td>1.69</td>
+<td>4.37 m/s</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota de Análisis:</strong> El AEP para turbinas de 2.0 MW en estas zonas con un perfil de viento $A \approx 4.45$ m/s arroja una producción anual en torno a 1.36 GWh (Factor de capacidad ~7.7%). Estos valores, aunque físicamente correctos de acuerdo a la ecuación de potencia, sugieren recursos moderados debido a las mallas del modelo ERA5 en el interior montañoso, que suaviza extremos. Hay gran concordancia entre los cálculos empíricos directos y los teóricos usando los ajustes estadísticos MLE de la Fase 3.</p>
+</blockquote>
+<h4 id="4-testing">4. Testing<a class="headerlink" href="#4-testing" title="Permanent link">&para;</a></h4>
+<p>Se implementan tests unitarios específicos (<code>pytest</code>) verificando la consistencia operativa:</p>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_reference_power_curve</code></td>
+<td>Límites operativos (0 debajo cut-in y por encima cut-out, y límite max 2000 kW)</td>
+</tr>
+<tr>
+<td><code>test_calculate_aep_vectorized_cdf</code></td>
+<td>Propagación correcta de nulos (<code>np.nan</code>) en vectorización matemática de Numpy</td>
+</tr>
+<tr>
+<td><code>test_compute_theoretical_aep</code></td>
+<td>Validar AEP escalar ascendente con escalas (A) de Weibull mayores y manejo de <code>null</code> en Polars</td>
+</tr>
+<tr>
+<td><code>test_compute_empirical_aep</code></td>
+<td>Agregación del time series mock mediante Polars <code>join_asof</code> sin fallos y limitación frente a nulos</td>
+</tr>
+</tbody>
+</table>
+<h4 id="5-estructura-de-codigo">5. Estructura de Código<a class="headerlink" href="#5-estructura-de-codigo" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>src/weather/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── data/
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>│   ├── aep.py               # get_reference_power_curve(), compute_theoretical_aep(), 
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>│                             # compute_empirical_aep(), rank_locations()
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>└── pipelines/
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    └── aep.py               # run_aep_pipeline() → Lee distribuciones y temporales, une y evalua
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>tests/
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>└── test_aep.py              # Validaciones para cálculos AEP vectorizados y asof joins
+</code></pre></div>
 <h3 id="fase-5-visualizacion">Fase 5: Visualización 🔲<a class="headerlink" href="#fase-5-visualizacion" title="Permanent link">&para;</a></h3>
 <p><em>Próximamente</em>: Rosas de viento interactivas, mapas de potencial eólico.</p>
 <h2 id="alumno">Alumno<a class="headerlink" href="#alumno" title="Permanent link">&para;</a></h2>
