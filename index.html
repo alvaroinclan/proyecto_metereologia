@@ -1715,10 +1715,10 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                              pl.concat(lotes)
 </code></pre></div>
 <h4 id="4-calculo-vectorial">4. Cálculo Vectorial<a class="headerlink" href="#4-calculo-vectorial" title="Permanent link">&para;</a></h4>
-<p>A partir de las componentes $u$ y $v$ del viento, se derivan:</p>
+<p>A partir de las componentes <span class="arithmatex">\(u\)</span> y <span class="arithmatex">\(v\)</span> del viento, se derivan:</p>
 <ul>
-<li><strong>Velocidad absoluta</strong>: $ws = \sqrt{u^2 + v^2}$</li>
-<li><strong>Dirección del viento</strong>: $wd = \left(\frac{180}{\pi} \cdot \arctan2(u, v) + 180\right) \mod 360$</li>
+<li><strong>Velocidad absoluta</strong>: <span class="arithmatex">\(ws = \sqrt{u^2 + v^2}\)</span></li>
+<li><strong>Dirección del viento</strong>: <span class="arithmatex">\(wd = \left(\frac{180}{\pi} \cdot \arctan2(u, v) + 180\right) \mod 360\)</span></li>
 </ul>
 <p>Se calculan tanto para 10 m (<code>ws10</code>, <code>wd10</code>) como para 100 m (<code>ws100</code>, <code>wd100</code>).</p>
 <h4 id="5-persistencia">5. Persistencia<a class="headerlink" href="#5-persistencia" title="Permanent link">&para;</a></h4>
@@ -1768,7 +1768,7 @@
 <ul>
 <li>El dataset resultante contiene <strong>438 000 registros</strong> (50 estaciones × 8 760 horas), un volumen representativo del reto Big Data propuesto.</li>
 <li>Las <strong>20 estaciones sin datos</strong> (station_30 a station_49) corresponden a puntos del mallado de 0.1° que caen fuera del dominio espacial del archivo GRIB original (resolución 0.25°). La interpolación lineal no puede extrapolar más allá del borde del dominio, por lo que estos puntos son <code>null</code>. Este comportamiento es correcto y esperable.</li>
-<li>La velocidad del viento a <strong>100 m es sistemáticamente mayor</strong> que a 10 m en todos los puntos, consistente con el perfil logarítmico del viento atmosférico: $u(z) \propto \ln(z/z_0)$, donde $z_0$ es la rugosidad superficial.</li>
+<li>La velocidad del viento a <strong>100 m es sistemáticamente mayor</strong> que a 10 m en todos los puntos, consistente con el perfil logarítmico del viento atmosférico: <span class="arithmatex">\(u(z) \propto \ln(z/z_0)\)</span>, donde <span class="arithmatex">\(z_0\)</span> es la rugosidad superficial.</li>
 <li>La región cubierta (norte de Asturias/León, coordenadas 42.8°N–43.2°N, 6.0°W–5.1°W) es una zona con orografía compleja y proximidad costera, lo que genera patrones de viento interesantes para el análisis eólico.</li>
 </ul>
 <h4 id="7-testing">7. Testing<a class="headerlink" href="#7-testing" title="Permanent link">&para;</a></h4>
@@ -1791,7 +1791,7 @@
 </tr>
 <tr>
 <td><code>test_load_grib_data_in_batches</code></td>
-<td>Lectura completa del GRIB, existencia de columnas vectoriales, $ws \ge 0$, $0 \le wd \le 360$</td>
+<td>Lectura completa del GRIB, existencia de columnas vectoriales, <span class="arithmatex">\(ws \ge 0\)</span>, <span class="arithmatex">\(0 \le wd \le 360\)</span></td>
 </tr>
 <tr>
 <td><code>test_generated_parquet</code></td>
@@ -1844,11 +1844,11 @@
 <p>Las calmas son más frecuentes a 10 m que a 100 m, lo cual es coherente con el perfil logarítmico del viento: a mayor altura, mayor velocidad media.</p>
 </blockquote>
 <h4 id="2-sector-consistency-consistencia-sectorial">2. Sector Consistency (Consistencia Sectorial)<a class="headerlink" href="#2-sector-consistency-consistencia-sectorial" title="Permanent link">&para;</a></h4>
-<p>La rosa de vientos se divide en $N$ sectores iguales (por defecto 12, de 30° cada uno). Para cada estación se calcula la frecuencia relativa de direcciones por sector y se compara con la distribución uniforme esperada ($1/N$):</p>
+<p>La rosa de vientos se divide en <span class="arithmatex">\(N\)</span> sectores iguales (por defecto 12, de 30° cada uno). Para cada estación se calcula la frecuencia relativa de direcciones por sector y se compara con la distribución uniforme esperada (<span class="arithmatex">\(1/N\)</span>):</p>
 <ul>
-<li><strong>Ratio de desviación</strong> por sector: $r_i = f_i \cdot N$, donde $f_i$ es la frecuencia observada en el sector $i$</li>
-<li><strong>Chi-cuadrado de Pearson</strong>: $\chi^2 = N_{\mathrm{obs}} \cdot \sum_{i=1}^{N} \frac{(f_i - 1/N)^2}{1/N}$</li>
-<li><strong>Flagged</strong>: una estación se marca como potencialmente problemática si algún sector tiene $r_i &gt; 3.0$</li>
+<li><strong>Ratio de desviación</strong> por sector: <span class="arithmatex">\(r_i = f_i \cdot N\)</span>, donde <span class="arithmatex">\(f_i\)</span> es la frecuencia observada en el sector <span class="arithmatex">\(i\)</span></li>
+<li><strong>Chi-cuadrado de Pearson</strong>: <span class="arithmatex">\(\chi^2 = N_{\mathrm{obs}} \cdot \sum_{i=1}^{N} \frac{(f_i - 1/N)^2}{1/N}\)</span></li>
+<li><strong>Flagged</strong>: una estación se marca como potencialmente problemática si algún sector tiene <span class="arithmatex">\(r_i &gt; 3.0\)</span></li>
 </ul>
 <table>
 <thead>
@@ -1856,7 +1856,7 @@
 <th>Nivel de altura</th>
 <th>Estaciones flagged</th>
 <th>Estación</th>
-<th>$\chi^2$</th>
+<th><span class="arithmatex">\(\chi^2\)</span></th>
 <th>Max desviación</th>
 </tr>
 </thead>
@@ -1917,7 +1917,7 @@
 </ul>
 <p><strong>Consistencia sectorial:</strong></p>
 <ul>
-<li>Solo <strong>1 de 30 estaciones</strong> (<code>station_25</code>) muestra una ligera inconsistencia sectorial a 10 m (ratio máximo 3.03, apenas por encima del umbral de 3.0), con un $\chi^2 = 6314$. Esto indica que la distribución de direcciones en esa estación no es uniforme, con un sector que acumula ~25% de las observaciones (vs. ~8.3% esperado en distribución uniforme).</li>
+<li>Solo <strong>1 de 30 estaciones</strong> (<code>station_25</code>) muestra una ligera inconsistencia sectorial a 10 m (ratio máximo 3.03, apenas por encima del umbral de 3.0), con un <span class="arithmatex">\(\chi^2 = 6314\)</span>. Esto indica que la distribución de direcciones en esa estación no es uniforme, con un sector que acumula ~25% de las observaciones (vs. ~8.3% esperado en distribución uniforme).</li>
 <li>A <strong>100 m ninguna estación</strong> es flaggeada, lo que confirma que el sesgo direccional observado a 10 m es un efecto de superficie (canalización por valles, sombras orográficas) que se disipa con la altura.</li>
 <li>La baja tasa de flags (1/30 = 3.3%) indica que los datos ERA5 son de alta calidad en esta región, sin artefactos instrumentales significativos (esperable al tratarse de datos de reanálisis, no de estaciones físicas).</li>
 </ul>
@@ -1949,7 +1949,7 @@
 <tr>
 <td><code>TestFlagSectorInconsistencies</code></td>
 <td>5</td>
-<td>Distribución uniforme no flagged ($\chi^2 \approx 0$), distribución sesgada flagged ($\chi^2 \gg 0$), ratio máximo de desviación, tolerancia alta desactiva flag, multi-estación</td>
+<td>Distribución uniforme no flagged (<span class="arithmatex">\(\chi^2 \approx 0\)</span>), distribución sesgada flagged (<span class="arithmatex">\(\chi^2 \gg 0\)</span>), ratio máximo de desviación, tolerancia alta desactiva flag, multi-estación</td>
 </tr>
 <tr>
 <td><code>TestRunQualityControl</code></td>
@@ -1978,15 +1978,15 @@
 <p>En esta fase se ajustan distribuciones de Weibull de dos parámetros a las series de velocidad del viento, tanto a nivel anual como estacional, y se analiza la variabilidad entre estaciones del año.</p>
 <h4 id="1-distribucion-de-weibull">1. Distribución de Weibull<a class="headerlink" href="#1-distribucion-de-weibull" title="Permanent link">&para;</a></h4>
 <p>La distribución de Weibull es el modelo estándar en energía eólica para caracterizar la frecuencia de velocidades del viento. Su función de densidad de probabilidad es:</p>
-<p>$$f(v) = \frac{k}{A} \left(\frac{v}{A}\right)^{k-1} \exp\left[-\left(\frac{v}{A}\right)^k\right]$$</p>
+<div class="arithmatex">\[f(v) = \frac{k}{A} \left(\frac{v}{A}\right)^{k-1} \exp\left[-\left(\frac{v}{A}\right)^k\right]\]</div>
 <p>donde:</p>
 <ul>
-<li>$k$ (forma): describe la amplitud de la distribución. Valores típicos: 1.5–3.0</li>
-<li>$A$ (escala): relacionado con la velocidad media del viento (m/s)</li>
+<li><span class="arithmatex">\(k\)</span> (forma): describe la amplitud de la distribución. Valores típicos: 1.5–3.0</li>
+<li><span class="arithmatex">\(A\)</span> (escala): relacionado con la velocidad media del viento (m/s)</li>
 </ul>
 <p>El ajuste se realiza por <strong>Máxima Verosimilitud (MLE)</strong> usando <code>scipy.stats.weibull_min</code> con parámetro de localización fijado a cero (<code>floc=0</code>), como requiere la Weibull de dos parámetros.</p>
 <h4 id="2-ajuste-anual-por-estacion">2. Ajuste Anual por Estación<a class="headerlink" href="#2-ajuste-anual-por-estacion" title="Permanent link">&para;</a></h4>
-<p>Para cada una de las 50 localizaciones se ajusta una distribución Weibull a la serie completa de velocidades. Se excluyen automáticamente las observaciones nulas y las calmas ($v = 0$). Se requiere un mínimo de 10 observaciones válidas para intentar el ajuste.</p>
+<p>Para cada una de las 50 localizaciones se ajusta una distribución Weibull a la serie completa de velocidades. Se excluyen automáticamente las observaciones nulas y las calmas (<span class="arithmatex">\(v = 0\)</span>). Se requiere un mínimo de 10 observaciones válidas para intentar el ajuste.</p>
 <p>El resultado incluye para cada estación:</p>
 <table>
 <thead>
@@ -2054,8 +2054,8 @@
 <h4 id="4-ajuste-estacional-por-estacion">4. Ajuste Estacional por Estación<a class="headerlink" href="#4-ajuste-estacional-por-estacion" title="Permanent link">&para;</a></h4>
 <p>Para cada combinación estación × estación meteorológica (4 estaciones × N localizaciones) se ajusta una distribución Weibull independiente. Esto permite detectar:</p>
 <ul>
-<li>Estaciones del año con mayor recurso eólico (mayor $A$)</li>
-<li>Variaciones en la forma de la distribución ($k$) entre estaciones</li>
+<li>Estaciones del año con mayor recurso eólico (mayor <span class="arithmatex">\(A\)</span>)</li>
+<li>Variaciones en la forma de la distribución (<span class="arithmatex">\(k\)</span>) entre estaciones</li>
 <li>Localizaciones con viento estable (baja variabilidad) vs. irregular (alta variabilidad)</li>
 </ul>
 <h4 id="5-metricas-de-variabilidad-estacional">5. Métricas de Variabilidad Estacional<a class="headerlink" href="#5-metricas-de-variabilidad-estacional" title="Permanent link">&para;</a></h4>
@@ -2070,27 +2070,27 @@
 <tbody>
 <tr>
 <td><code>cv_k</code></td>
-<td>Coeficiente de Variación de $k$: $\text{std}(k) / \text{mean}(k)$</td>
+<td>Coeficiente de Variación de <span class="arithmatex">\(k\)</span>: <span class="arithmatex">\(\text{std}(k) / \text{mean}(k)\)</span></td>
 </tr>
 <tr>
 <td><code>cv_A</code></td>
-<td>Coeficiente de Variación de $A$: $\text{std}(A) / \text{mean}(A)$</td>
+<td>Coeficiente de Variación de <span class="arithmatex">\(A\)</span>: <span class="arithmatex">\(\text{std}(A) / \text{mean}(A)\)</span></td>
 </tr>
 <tr>
 <td><code>range_k</code></td>
-<td>Rango de $k$ entre estaciones ($\max - \min$)</td>
+<td>Rango de <span class="arithmatex">\(k\)</span> entre estaciones (<span class="arithmatex">\(\max - \min\)</span>)</td>
 </tr>
 <tr>
 <td><code>range_A</code></td>
-<td>Rango de $A$ entre estaciones (m/s)</td>
+<td>Rango de <span class="arithmatex">\(A\)</span> entre estaciones (m/s)</td>
 </tr>
 <tr>
 <td><code>best_season</code></td>
-<td>Estación con mayor $A$ (viento más fuerte)</td>
+<td>Estación con mayor <span class="arithmatex">\(A\)</span> (viento más fuerte)</td>
 </tr>
 <tr>
 <td><code>worst_season</code></td>
-<td>Estación con menor $A$ (viento más débil)</td>
+<td>Estación con menor <span class="arithmatex">\(A\)</span> (viento más débil)</td>
 </tr>
 <tr>
 <td><code>n_seasons_fitted</code></td>
@@ -2099,7 +2099,7 @@
 </tbody>
 </table>
 <blockquote>
-<p>Un CV bajo de $A$ indica un recurso eólico estable a lo largo del año, lo cual es deseable para la generación eólica continua. Un CV alto sugiere marcada estacionalidad.</p>
+<p>Un CV bajo de <span class="arithmatex">\(A\)</span> indica un recurso eólico estable a lo largo del año, lo cual es deseable para la generación eólica continua. Un CV alto sugiere marcada estacionalidad.</p>
 </blockquote>
 <h4 id="6-datos-de-salida">6. Datos de Salida<a class="headerlink" href="#6-datos-de-salida" title="Permanent link">&para;</a></h4>
 <p>El pipeline genera tres archivos Parquet por nivel de altura en <code>data/results/</code>:</p>
@@ -2142,22 +2142,22 @@
 <td>30/50</td>
 </tr>
 <tr>
-<td>$k$ medio (forma)</td>
+<td><span class="arithmatex">\(k\)</span> medio (forma)</td>
 <td>1.603</td>
 <td>1.649</td>
 </tr>
 <tr>
-<td>$k$ rango</td>
+<td><span class="arithmatex">\(k\)</span> rango</td>
 <td>[1.442, 1.744]</td>
 <td>[1.513, 1.773]</td>
 </tr>
 <tr>
-<td>$A$ medio (escala)</td>
+<td><span class="arithmatex">\(A\)</span> medio (escala)</td>
 <td>2.462 m/s</td>
 <td>4.054 m/s</td>
 </tr>
 <tr>
-<td>$A$ rango</td>
+<td><span class="arithmatex">\(A\)</span> rango</td>
 <td>[2.228, 2.752] m/s</td>
 <td>[3.740, 4.468] m/s</td>
 </tr>
@@ -2173,10 +2173,10 @@
 <thead>
 <tr>
 <th>Estación del año</th>
-<th>$k$ medio (10 m)</th>
-<th>$A$ medio (10 m)</th>
-<th>$k$ medio (100 m)</th>
-<th>$A$ medio (100 m)</th>
+<th><span class="arithmatex">\(k\)</span> medio (10 m)</th>
+<th><span class="arithmatex">\(A\)</span> medio (10 m)</th>
+<th><span class="arithmatex">\(k\)</span> medio (100 m)</th>
+<th><span class="arithmatex">\(A\)</span> medio (100 m)</th>
 </tr>
 </thead>
 <tbody>
@@ -2221,17 +2221,17 @@
 </thead>
 <tbody>
 <tr>
-<td>CV de $A$ (media)</td>
+<td>CV de <span class="arithmatex">\(A\)</span> (media)</td>
 <td>0.093</td>
 <td>0.138</td>
 </tr>
 <tr>
-<td>CV de $A$ (rango)</td>
+<td>CV de <span class="arithmatex">\(A\)</span> (rango)</td>
 <td>[0.069, 0.120]</td>
 <td>[0.103, 0.171]</td>
 </tr>
 <tr>
-<td>Rango $A$ medio</td>
+<td>Rango <span class="arithmatex">\(A\)</span> medio</td>
 <td>0.590 m/s</td>
 <td>1.466 m/s</td>
 </tr>
@@ -2248,27 +2248,27 @@
 </tbody>
 </table>
 <h4 id="8-interpretacion-de-resultados">8. Interpretación de Resultados<a class="headerlink" href="#8-interpretacion-de-resultados" title="Permanent link">&para;</a></h4>
-<p><strong>Parámetro de forma $k$ y régimen de vientos:</strong></p>
+<p><strong>Parámetro de forma <span class="arithmatex">\(k\)</span> y régimen de vientos:</strong></p>
 <ul>
-<li>Los valores de $k$ entre <strong>1.4 y 1.8</strong> son relativamente bajos comparados con los típicos de sitios eólicos óptimos ($k \approx 2.0$–$2.5$). Un $k$ bajo indica una distribución de velocidades con cola pesada: hay una proporción significativa tanto de calmas como de rachas fuertes. Esto es típico de zonas con <strong>orografía compleja</strong> como el norte de España, donde las montañas generan turbulencia y variabilidad local.</li>
-<li>En <strong>verano (JJA)</strong> el parámetro $k$ sube a <strong>1.96–2.12</strong>, indicando un régimen de vientos más estable y predecible, asociado a las brisas térmicas diurnas y la menor actividad ciclónica.</li>
-<li>A <strong>100 m</strong> los valores de $k$ son ligeramente superiores (1.65 vs 1.60), reflejando que el viento es más regular al alejarse de la superficie y sus perturbaciones.</li>
+<li>Los valores de <span class="arithmatex">\(k\)</span> entre <strong>1.4 y 1.8</strong> son relativamente bajos comparados con los típicos de sitios eólicos óptimos (<span class="arithmatex">\(k \approx 2.0\)</span>–<span class="arithmatex">\(2.5\)</span>). Un <span class="arithmatex">\(k\)</span> bajo indica una distribución de velocidades con cola pesada: hay una proporción significativa tanto de calmas como de rachas fuertes. Esto es típico de zonas con <strong>orografía compleja</strong> como el norte de España, donde las montañas generan turbulencia y variabilidad local.</li>
+<li>En <strong>verano (JJA)</strong> el parámetro <span class="arithmatex">\(k\)</span> sube a <strong>1.96–2.12</strong>, indicando un régimen de vientos más estable y predecible, asociado a las brisas térmicas diurnas y la menor actividad ciclónica.</li>
+<li>A <strong>100 m</strong> los valores de <span class="arithmatex">\(k\)</span> son ligeramente superiores (1.65 vs 1.60), reflejando que el viento es más regular al alejarse de la superficie y sus perturbaciones.</li>
 </ul>
-<p><strong>Parámetro de escala $A$ y recurso eólico:</strong></p>
+<p><strong>Parámetro de escala <span class="arithmatex">\(A\)</span> y recurso eólico:</strong></p>
 <ul>
-<li>La escala $A$ a 100 m (<strong>4.05 m/s</strong>) es un <strong>65% mayor</strong> que a 10 m (<strong>2.46 m/s</strong>), consistente con la ley de potencia del perfil vertical: $u(z_2)/u(z_1) = (z_2/z_1)^\alpha$ con $\alpha \approx 0.2$ para terreno moderadamente rugoso, lo que predice un ratio de $(100/10)^{0.2} \approx 1.58$, muy próximo al observado.</li>
-<li>Los valores de $A$ son <strong>moderados-bajos</strong> para aplicaciones eólicas. Los mejores emplazamientos europeos presentan $A &gt; 8$–$10$ m/s a 100 m. Sin embargo, debe tenerse en cuenta que los datos ERA5 tienden a <strong>subestimar</strong> las velocidades en zonas de orografía compleja, ya que el modelo suaviza los picos topográficos.</li>
+<li>La escala <span class="arithmatex">\(A\)</span> a 100 m (<strong>4.05 m/s</strong>) es un <strong>65% mayor</strong> que a 10 m (<strong>2.46 m/s</strong>), consistente con la ley de potencia del perfil vertical: <span class="arithmatex">\(u(z_2)/u(z_1) = (z_2/z_1)^\alpha\)</span> con <span class="arithmatex">\(\alpha \approx 0.2\)</span> para terreno moderadamente rugoso, lo que predice un ratio de <span class="arithmatex">\((100/10)^{0.2} \approx 1.58\)</span>, muy próximo al observado.</li>
+<li>Los valores de <span class="arithmatex">\(A\)</span> son <strong>moderados-bajos</strong> para aplicaciones eólicas. Los mejores emplazamientos europeos presentan <span class="arithmatex">\(A &gt; 8\)</span>–<span class="arithmatex">\(10\)</span> m/s a 100 m. Sin embargo, debe tenerse en cuenta que los datos ERA5 tienden a <strong>subestimar</strong> las velocidades en zonas de orografía compleja, ya que el modelo suaviza los picos topográficos.</li>
 </ul>
 <p><strong>Estacionalidad:</strong></p>
 <ul>
-<li><strong>Invierno (DJF) y otoño (SON)</strong> son las estaciones con mayor recurso eólico (mayor $A$), dominadas por los frentes atlánticos y las borrascas extratropicales que cruzan la península de oeste a este.</li>
-<li><strong>Verano (JJA)</strong> es unánimemente la peor estación en las 30 localizaciones, con una reducción del 25% en $A$ a 10 m y del 32% a 100 m respecto al invierno. Esto coincide con el anticiclón de las Azores, que inhibe la actividad ciclónica sobre la península ibérica en verano.</li>
+<li><strong>Invierno (DJF) y otoño (SON)</strong> son las estaciones con mayor recurso eólico (mayor <span class="arithmatex">\(A\)</span>), dominadas por los frentes atlánticos y las borrascas extratropicales que cruzan la península de oeste a este.</li>
+<li><strong>Verano (JJA)</strong> es unánimemente la peor estación en las 30 localizaciones, con una reducción del 25% en <span class="arithmatex">\(A\)</span> a 10 m y del 32% a 100 m respecto al invierno. Esto coincide con el anticiclón de las Azores, que inhibe la actividad ciclónica sobre la península ibérica en verano.</li>
 <li>A 100 m, el invierno domina de forma más clara (<strong>27/30</strong> estaciones vs. 16/30 a 10 m), indicando que a mayor altura los patrones sinópticos de gran escala (borrascas invernales) predominan sobre los efectos locales (brisas, canalización).</li>
 </ul>
 <p><strong>Variabilidad y estabilidad del recurso:</strong></p>
 <ul>
-<li>El CV de $A$ a 10 m es <strong>0.093</strong> (9.3%), un valor bajo que indica un recurso relativamente estable a lo largo del año. A 100 m el CV sube a <strong>0.138</strong> (13.8%), lo que puede parecer contradictorio pero se explica porque a mayor altura los contrastes estacionales sinópticos se amplifican (más viento invernal, más calma estival), mientras que a 10 m la orografía local amortigua estos contrastes.</li>
-<li>El rango de $A$ entre estaciones es de <strong>0.59 m/s</strong> a 10 m y <strong>1.47 m/s</strong> a 100 m, confirmando que la variabilidad estacional absoluta crece con la altura.</li>
+<li>El CV de <span class="arithmatex">\(A\)</span> a 10 m es <strong>0.093</strong> (9.3%), un valor bajo que indica un recurso relativamente estable a lo largo del año. A 100 m el CV sube a <strong>0.138</strong> (13.8%), lo que puede parecer contradictorio pero se explica porque a mayor altura los contrastes estacionales sinópticos se amplifican (más viento invernal, más calma estival), mientras que a 10 m la orografía local amortigua estos contrastes.</li>
+<li>El rango de <span class="arithmatex">\(A\)</span> entre estaciones es de <strong>0.59 m/s</strong> a 10 m y <strong>1.47 m/s</strong> a 100 m, confirmando que la variabilidad estacional absoluta crece con la altura.</li>
 </ul>
 <h4 id="9-testing">9. Testing<a class="headerlink" href="#9-testing" title="Permanent link">&para;</a></h4>
 <p>Se implementan <strong>60 tests unitarios</strong> organizados en 7 clases:</p>
@@ -2350,7 +2350,7 @@
 <h4 id="2-metodologia-de-calculo">2. Metodología de Cálculo<a class="headerlink" href="#2-metodologia-de-calculo" title="Permanent link">&para;</a></h4>
 <p>Se evalúa la energía generada mediante dos enfoques complementarios ("Reto Big Data"):</p>
 <ul>
-<li><strong>AEP Teórico (CDF Vectorizado)</strong>: Calcula la energía integrando la curva de potencia sobre la distribución de Weibull paramétrica ajustada en la Fase 3. Para un alto rendimiento masivo, se vectoriza sobre todas las estaciones empleando la Función de Distribución Acumulada (CDF) de Weibull de forma analítica en tramos definidos por la curva de potencia ($Prob = CDF(v_{sup}) - CDF(v_{inf})$).</li>
+<li><strong>AEP Teórico (CDF Vectorizado)</strong>: Calcula la energía integrando la curva de potencia sobre la distribución de Weibull paramétrica ajustada en la Fase 3. Para un alto rendimiento masivo, se vectoriza sobre todas las estaciones empleando la Función de Distribución Acumulada (CDF) de Weibull de forma analítica en tramos definidos por la curva de potencia (<span class="arithmatex">\(Prob = CDF(v_{sup}) - CDF(v_{inf})\)</span>).</li>
 <li><strong>AEP Empírico (Time-Series Asof Join)</strong>: Mapea la serie temporal hora a hora usando cruces de proximidad masivos (<code>join_asof</code> en Polars con estrategia <code>nearest</code>), emparejando eficientemente la velocidad horaria con el valor de potencia más cercano y promediando anualmente sobre la serie original.</li>
 </ul>
 <p>Ambos resultados se agregan y se reescalan de kW a GWh considerando las 8760 horas del año estándar.</p>
@@ -2399,7 +2399,7 @@
 </tbody>
 </table>
 <blockquote>
-<p><strong>Nota de Análisis:</strong> El AEP para turbinas de 2.0 MW en estas zonas con un perfil de viento $A \approx 4.45$ m/s arroja una producción anual en torno a 1.36 GWh (Factor de capacidad ~7.7%). Estos valores, aunque físicamente correctos de acuerdo a la ecuación de potencia, sugieren recursos moderados debido a las mallas del modelo ERA5 en el interior montañoso, que suaviza extremos. Hay gran concordancia entre los cálculos empíricos directos y los teóricos usando los ajustes estadísticos MLE de la Fase 3.</p>
+<p><strong>Nota de Análisis:</strong> El AEP para turbinas de 2.0 MW en estas zonas con un perfil de viento <span class="arithmatex">\(A \approx 4.45\)</span> m/s arroja una producción anual en torno a 1.36 GWh (Factor de capacidad ~7.7%). Estos valores, aunque físicamente correctos de acuerdo a la ecuación de potencia, sugieren recursos moderados debido a las mallas del modelo ERA5 en el interior montañoso, que suaviza extremos. Hay gran concordancia entre los cálculos empíricos directos y los teóricos usando los ajustes estadísticos MLE de la Fase 3.</p>
 </blockquote>
 <h4 id="4-testing">4. Testing<a class="headerlink" href="#4-testing" title="Permanent link">&para;</a></h4>
 <p>Se implementan tests unitarios específicos (<code>pytest</code>) verificando la consistencia operativa:</p>
@@ -2449,7 +2449,7 @@
 <li><strong>Tooltips y Popups Interactivos:</strong> Al hacer hover o clic en cada punto, se despliega una ficha técnica con: </li>
 <li>Estación y su ranking regional.</li>
 <li>AEP Teórico y Empírico (GWh).</li>
-<li>Parámetros estadísticos de Weibull subyacentes ($k$, $A$).</li>
+<li>Parámetros estadísticos de Weibull subyacentes (<span class="arithmatex">\(k\)</span>, <span class="arithmatex">\(A\)</span>).</li>
 </ul>
 <h4 id="2-rosas-de-viento-interactivas-plotly">2. Rosas de Viento Interactivas (Plotly)<a class="headerlink" href="#2-rosas-de-viento-interactivas-plotly" title="Permanent link">&para;</a></h4>
 <p>Para comprender la direccionalidad y distribución de velocidades en los puntos más óptimos, se ha automatizado la generación de Rosas de Viento (<code>plot_wind_rose</code>) para las estaciones top del ranking:</p>
@@ -2546,6 +2546,12 @@
     
     
       <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
