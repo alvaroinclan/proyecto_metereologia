@@ -1,8 +1,8 @@
+from datetime import datetime
+
 import folium
 import plotly.graph_objects as go
 import polars as pl
-
-from datetime import datetime
 
 from weather.visualization.maps import attach_coordinates, create_potential_map
 from weather.visualization.timeseries import (
