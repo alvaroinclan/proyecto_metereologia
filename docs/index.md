@@ -496,17 +496,26 @@ Para comprender la direccionalidad y distribución de velocidades en los puntos 
 - **Gráficos Polares (Bar Polar):** Plotly genera un gráfico interactivo (`px.bar_polar`) donde el radio es la frecuencia observada (%), el ángulo es la dirección de proveniencia del viento, y el color codifica el rango de velocidades.
 - **Interactividad:** Permite silenciar o aislar ciertos rangos de velocidad al hacer clic en la leyenda, haciendo un *zoom* direccional.
 
-#### 3. Estructura de Código
+#### 3. Series Temporales (Plotly)
+
+Se han añadido gráficos de evolución temporal de las velocidades medias de viento para analizar la estacionalidad en las localizaciones con mayor recurso eólico:
+
+- **Velocidad Media Mensual (Top 3):** Un diagrama de barras combinadas que presenta la media agregada del Top 3 de las mejores estaciones mes a mes, facilitando una visión global de la estacionalidad del viento en la zona más productiva.
+- **Evolución por Estación:** Un gráfico de líneas con la evolución individual de cada una de estas 3 estaciones top de forma concurrente, permitiendo al analista comparar la regularidad y el pico del recurso a lo largo de los meses.
+- **Formateo Temporal:** Se utiliza la función de truncamiento temporal de Polars (`dt.truncate("1mo")`) para agrupar ágilmente en resoluciones mensuales.
+
+#### 4. Estructura de Código
 
 ```
 src/weather/
 ├── visualization/
 │   ├── maps.py              # attach_coordinates(), create_potential_map()
-│   └── wind_rose.py         # compute_wind_rose_data(), plot_wind_rose()
+│   ├── wind_rose.py         # compute_wind_rose_data(), plot_wind_rose()
+│   └── timeseries.py        # plot_top_stations_timeseries(), plot_stations_monthly_lines()
 └── pipelines/
     └── visualize.py         # run_visualization_pipeline() → Genera HTMLs
 tests/
-└── test_visualize.py        # Validación de aserciones de gráficas y mapas
+└── test_visualize.py        # Validación de gráficas, mapas y series temporales
 ```
 
 > **Outputs Generados:** Todas las gráficas han sido renderizadas y exportadas dinámicamente como archivos HTML enriquecidos en `docs/visuals/`.

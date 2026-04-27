@@ -2,7 +2,13 @@ import folium
 import plotly.graph_objects as go
 import polars as pl
 
+from datetime import datetime
+
 from weather.visualization.maps import attach_coordinates, create_potential_map
+from weather.visualization.timeseries import (
+    plot_stations_monthly_lines,
+    plot_top_stations_timeseries,
+)
 from weather.visualization.wind_rose import compute_wind_rose_data, plot_wind_rose
 
 
@@ -69,3 +75,27 @@ def test_create_potential_map():
     )
     m2 = create_potential_map(df_no_coords)
     assert isinstance(m2, folium.Map)
+
+
+def test_plot_top_stations_timeseries():
+    df = pl.DataFrame(
+        {
+            "time": [datetime(2025, 1, 1), datetime(2025, 1, 2), datetime(2025, 2, 1)],
+            "station": ["station_1", "station_1", "station_2"],
+            "ws100": [10.0, 12.0, 15.0],
+        }
+    )
+    fig = plot_top_stations_timeseries(df, top_stations=["station_1", "station_2"])
+    assert isinstance(fig, go.Figure)
+
+
+def test_plot_stations_monthly_lines():
+    df = pl.DataFrame(
+        {
+            "time": [datetime(2025, 1, 1), datetime(2025, 1, 2), datetime(2025, 2, 1)],
+            "station": ["station_1", "station_1", "station_2"],
+            "ws100": [10.0, 12.0, 15.0],
+        }
+    )
+    fig = plot_stations_monthly_lines(df, top_stations=["station_1", "station_2"])
+    assert isinstance(fig, go.Figure)

@@ -8,6 +8,10 @@ import os
 import polars as pl
 
 from weather.visualization.maps import create_potential_map
+from weather.visualization.timeseries import (
+    plot_stations_monthly_lines,
+    plot_top_stations_timeseries,
+)
 from weather.visualization.wind_rose import compute_wind_rose_data, plot_wind_rose
 
 
@@ -59,6 +63,21 @@ def run_visualization_pipeline(
                 html_path = os.path.join(output_dir, f"wind_rose_{station}_100m.html")
                 fig.write_html(html_path)
                 print(f"  Guardada en {html_path}")
+
+        # 3. Series Temporales de Velocidad Media
+        print("Generando series temporales de velocidad media...")
+
+        # Combined bar chart
+        fig_ts_bar = plot_top_stations_timeseries(ts_df, top_stations, ws_col="ws100")
+        ts_bar_path = os.path.join(output_dir, "timeseries_mean_ws_top3.html")
+        fig_ts_bar.write_html(ts_bar_path)
+        print(f"  Serie temporal (barras combinadas) guardada en {ts_bar_path}")
+
+        # Line chart by station
+        fig_ts_lines = plot_stations_monthly_lines(ts_df, top_stations, ws_col="ws100")
+        ts_lines_path = os.path.join(output_dir, "timeseries_lines_ws_top3.html")
+        fig_ts_lines.write_html(ts_lines_path)
+        print(f"  Serie temporal (líneas por estación) guardada en {ts_lines_path}")
 
     print("Pipeline de visualización completado con éxito.")
 
