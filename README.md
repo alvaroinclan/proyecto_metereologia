@@ -1,13 +1,23 @@
 # Análisis de Datos Meteorológicos
 
-> Proyecto final — Big Data · Grado en Matemáticas · UNIE Universidad
-
 [![CI](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/ci.yml/badge.svg)](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/ci.yml)
 [![Docs](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/docs.yml/badge.svg)](https://alvaroinclan.github.io/proyecto_meteorologia/)
 [![Coverage](https://codecov.io/gh/alvaroinclan/proyecto_meteorologia/graph/badge.svg)](https://codecov.io/gh/alvaroinclan/proyecto_meteorologia)
 [![Version](https://img.shields.io/github/v/release/alvaroinclan/proyecto_meteorologia)](https://github.com/alvaroinclan/proyecto_meteorologia/releases)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+<div align="center">
+  <p>
+    <strong>Proyecto final — Big Data · Grado en Matemáticas · UNIE Universidad</strong>
+  </p>
+
+  <p>
+    <a href="#descripción-del-proyecto">Acerca de</a> •
+    <a href="https://alvaroinclan.github.io/proyecto_meteorologia/">Documentación</a> •
+    <a href="#installation">Instalación</a>
+  </p>
+</div>
 
 ---
 
