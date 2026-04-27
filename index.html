@@ -862,10 +862,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-estructura-de-codigo" class="md-nav__link">
+  <a href="#3-series-temporales-plotly" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Estructura de Código
+        3. Series Temporales (Plotly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Estructura de Código
       
     </span>
   </a>
@@ -1521,10 +1532,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-estructura-de-codigo" class="md-nav__link">
+  <a href="#3-series-temporales-plotly" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Estructura de Código
+        3. Series Temporales (Plotly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-estructura-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Estructura de Código
       
     </span>
   </a>
@@ -2436,15 +2458,23 @@
 <li><strong>Gráficos Polares (Bar Polar):</strong> Plotly genera un gráfico interactivo (<code>px.bar_polar</code>) donde el radio es la frecuencia observada (%), el ángulo es la dirección de proveniencia del viento, y el color codifica el rango de velocidades.</li>
 <li><strong>Interactividad:</strong> Permite silenciar o aislar ciertos rangos de velocidad al hacer clic en la leyenda, haciendo un <em>zoom</em> direccional.</li>
 </ul>
-<h4 id="3-estructura-de-codigo">3. Estructura de Código<a class="headerlink" href="#3-estructura-de-codigo" title="Permanent link">&para;</a></h4>
+<h4 id="3-series-temporales-plotly">3. Series Temporales (Plotly)<a class="headerlink" href="#3-series-temporales-plotly" title="Permanent link">&para;</a></h4>
+<p>Se han añadido gráficos de evolución temporal de las velocidades medias de viento para analizar la estacionalidad en las localizaciones con mayor recurso eólico:</p>
+<ul>
+<li><strong>Velocidad Media Mensual (Top 3):</strong> Un diagrama de barras combinadas que presenta la media agregada del Top 3 de las mejores estaciones mes a mes, facilitando una visión global de la estacionalidad del viento en la zona más productiva.</li>
+<li><strong>Evolución por Estación:</strong> Un gráfico de líneas con la evolución individual de cada una de estas 3 estaciones top de forma concurrente, permitiendo al analista comparar la regularidad y el pico del recurso a lo largo de los meses.</li>
+<li><strong>Formateo Temporal:</strong> Se utiliza la función de truncamiento temporal de Polars (<code>dt.truncate("1mo")</code>) para agrupar ágilmente en resoluciones mensuales.</li>
+</ul>
+<h4 id="4-estructura-de-codigo">4. Estructura de Código<a class="headerlink" href="#4-estructura-de-codigo" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>src/weather/
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>├── visualization/
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>│   ├── maps.py              # attach_coordinates(), create_potential_map()
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>│   └── wind_rose.py         # compute_wind_rose_data(), plot_wind_rose()
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>└── pipelines/
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    └── visualize.py         # run_visualization_pipeline() → Genera HTMLs
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>tests/
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>└── test_visualize.py        # Validación de aserciones de gráficas y mapas
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>│   ├── wind_rose.py         # compute_wind_rose_data(), plot_wind_rose()
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>│   └── timeseries.py        # plot_top_stations_timeseries(), plot_stations_monthly_lines()
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>└── pipelines/
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    └── visualize.py         # run_visualization_pipeline() → Genera HTMLs
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>tests/
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>└── test_visualize.py        # Validación de gráficas, mapas y series temporales
 </code></pre></div>
 <blockquote>
 <p><strong>Outputs Generados:</strong> Todas las gráficas han sido renderizadas y exportadas dinámicamente como archivos HTML enriquecidos en <code>docs/visuals/</code>.</p>
