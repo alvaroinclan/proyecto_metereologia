@@ -1,9 +1,9 @@
 # Análisis de Datos Meteorológicos
 
-[![CI](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/ci.yml/badge.svg)](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/ci.yml)
-[![Docs](https://github.com/alvaroinclan/proyecto_meteorologia/actions/workflows/docs.yml/badge.svg)](https://alvaroinclan.github.io/proyecto_meteorologia/)
-[![Coverage](https://codecov.io/gh/alvaroinclan/proyecto_meteorologia/graph/badge.svg)](https://codecov.io/gh/alvaroinclan/proyecto_meteorologia)
-[![Version](https://img.shields.io/github/v/release/alvaroinclan/proyecto_meteorologia)](https://github.com/alvaroinclan/proyecto_meteorologia/releases)
+[![CI](https://github.com/alvaroinclan/proyecto_metereologia/actions/workflows/ci.yml/badge.svg)](https://github.com/alvaroinclan/proyecto_metereologia/actions/workflows/ci.yml)
+[![Docs](https://github.com/alvaroinclan/proyecto_metereologia/actions/workflows/docs.yml/badge.svg)](https://alvaroinclan.github.io/proyecto_metereologia/)
+[![Coverage](https://codecov.io/gh/alvaroinclan/proyecto_metereologia/graph/badge.svg)](https://codecov.io/gh/alvaroinclan/proyecto_metereologia)
+[![Version](https://img.shields.io/github/v/release/alvaroinclan/proyecto_metereologia)](https://github.com/alvaroinclan/proyecto_metereologia/releases)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -14,7 +14,7 @@
 
   <p>
     <a href="#descripción-del-proyecto">Acerca de</a> •
-    <a href="https://alvaroinclan.github.io/proyecto_meteorologia/">Documentación</a> •
+    <a href="https://alvaroinclan.github.io/proyecto_metereologia/">Documentación</a> •
     <a href="#installation">Instalación</a>
   </p>
 </div>
@@ -27,13 +27,13 @@ Evaluación del potencial eólico a partir de datos de viento en la península i
 
 ## Documentation
 
-Full documentation at **[alvaroinclan.github.io/proyecto_meteorologia](https://alvaroinclan.github.io/proyecto_meteorologia/)**
+Full documentation at **[alvaroinclan.github.io/proyecto_metereologia](https://alvaroinclan.github.io/proyecto_metereologia/)**
 
 ## Installation
 
   ```bash
-  git clone https://github.com/alvaroinclan/proyecto_meteorologia.git
-  cd proyecto_meteorologia
+  git clone https://github.com/alvaroinclan/proyecto_metereologia.git
+  cd proyecto_metereologia
   pip install uv
   uv sync --group dev
   ```
@@ -59,7 +59,7 @@ Data is not included in the repository. To download:
 ## Project Structure
 
   ```
-  proyecto_meteorologia/
+  proyecto_metereologia/
   ├── .github/workflows/   # CI/CD pipelines
   ├── data/                # Data files (not committed — see .gitignore)
   ├── docs/                # MkDocs documentation sources
