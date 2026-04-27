@@ -1,11 +1,10 @@
 import os
+from unittest.mock import patch
 
 import numpy as np
 import polars as pl
 import pytest
 import xarray as xr
-
-from unittest.mock import patch
 
 from weather.data.load import (
     generate_target_locations,
@@ -147,7 +146,7 @@ def test_load_grib_data_in_batches_mocked():
     lats = [43.0, 43.1]
     lons = [-6.0, -5.9]
     data = np.array([[[1.0, 2.0], [3.0, 4.0]]])
-    
+
     ds_wind = xr.Dataset(
         data_vars=dict(
             u10=(["time", "latitude", "longitude"], data),
@@ -164,11 +163,11 @@ def test_load_grib_data_in_batches_mocked():
         ),
         coords=dict(time=times, latitude=lats, longitude=lons)
     )
-    
+
     with patch("weather.data.load.cfgrib.open_datasets", return_value=[ds_wind, ds_gust]):
         with patch("weather.data.load.Path.exists", return_value=True):
             df = load_grib_data_in_batches("dummy.grib", batch_size=10)
-            
+
             assert isinstance(df, pl.DataFrame)
             assert "ws10" in df.columns
             assert "wd10" in df.columns

@@ -1,12 +1,12 @@
 """Tests for Weibull distribution fitting and seasonal variability analysis."""
 
 from datetime import datetime
+from unittest.mock import patch
 
 import numpy as np
 import polars as pl
 import pytest
 from scipy.stats import weibull_min as scipy_weibull
-from unittest.mock import patch
 
 from weather.data.weibull import (
     MIN_OBS_FOR_FIT,
