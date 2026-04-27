@@ -6,6 +6,7 @@ import numpy as np
 import polars as pl
 import pytest
 from scipy.stats import weibull_min as scipy_weibull
+from unittest.mock import patch
 
 from weather.data.weibull import (
     MIN_OBS_FOR_FIT,
@@ -201,6 +202,12 @@ class TestFitWeibull:
         k, _a = result
         # k should be very large for a nearly constant distribution
         assert k > 10
+
+    def test_fit_weibull_exception(self):
+        """Should return None when the optimizer raises an exception."""
+        speeds = np.array([5.0, 6.0, 7.0] * 10)
+        with patch("weather.data.weibull.weibull_min.fit", side_effect=RuntimeError("Convergence failed")):
+            assert fit_weibull(speeds) is None
 
 
 # ---------------------------------------------------------------------------

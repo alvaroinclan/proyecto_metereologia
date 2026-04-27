@@ -5,6 +5,8 @@ import polars as pl
 import pytest
 import xarray as xr
 
+from unittest.mock import patch
+
 from weather.data.load import (
     generate_target_locations,
     load_grib_data_in_batches,
@@ -80,6 +82,42 @@ def test_process_dataset_chunk():
     assert "surface" not in cols
 
 
+def test_process_dataset_chunk_valid_time():
+    """Test the dataset interpolation with valid_time."""
+    times = [np.datetime64("2025-01-01T00:00:00")]
+    lats = [43.0, 43.25]
+    lons = [-6.0, -5.75]
+
+    data = np.random.rand(1, 2, 2)
+    ds_mock = xr.Dataset(
+        data_vars=dict(
+            u10=(["time", "latitude", "longitude"], data),
+        ),
+        coords=dict(
+            time=times,
+            step=times,
+            valid_time=(["time"], times),
+            latitude=lats,
+            longitude=lons,
+        ),
+    )
+
+    target_lats = xr.DataArray(
+        [43.1, 43.15], dims="station", coords={"station": ["st_1", "st_2"]}
+    )
+    target_lons = xr.DataArray(
+        [-5.9, -5.8], dims="station", coords={"station": ["st_1", "st_2"]}
+    )
+
+    df = process_dataset_chunk(ds_mock, target_lats, target_lons)
+
+    assert isinstance(df, pl.DataFrame)
+    cols = df.columns
+    assert "time" in cols
+    assert "step" not in cols
+    assert "valid_time" not in cols
+
+
 @pytest.mark.skipif(
     not os.path.exists("data/raw/data.grib"), reason="GRIB file not found"
 )
@@ -102,6 +140,45 @@ def test_load_grib_data_in_batches():
         # Direction should be between 0 and 360 degrees
         assert df["wd10"].min() >= 0.0
         assert df["wd10"].max() <= 360.0
+
+
+def test_load_grib_data_in_batches_mocked():
+    times = [np.datetime64("2025-01-01T00:00:00")]
+    lats = [43.0, 43.1]
+    lons = [-6.0, -5.9]
+    data = np.array([[[1.0, 2.0], [3.0, 4.0]]])
+    
+    ds_wind = xr.Dataset(
+        data_vars=dict(
+            u10=(["time", "latitude", "longitude"], data),
+            v10=(["time", "latitude", "longitude"], data),
+            u100=(["time", "latitude", "longitude"], data),
+            v100=(["time", "latitude", "longitude"], data)
+        ),
+        coords=dict(time=times, latitude=lats, longitude=lons)
+    )
+
+    ds_gust = xr.Dataset(
+        data_vars=dict(
+            fg10=(["time", "latitude", "longitude"], data)
+        ),
+        coords=dict(time=times, latitude=lats, longitude=lons)
+    )
+    
+    with patch("weather.data.load.cfgrib.open_datasets", return_value=[ds_wind, ds_gust]):
+        with patch("weather.data.load.Path.exists", return_value=True):
+            df = load_grib_data_in_batches("dummy.grib", batch_size=10)
+            
+            assert isinstance(df, pl.DataFrame)
+            assert "ws10" in df.columns
+            assert "wd10" in df.columns
+            assert "ws100" in df.columns
+            assert "wd100" in df.columns
+
+
+def test_load_grib_data_in_batches_file_not_found():
+    with pytest.raises(FileNotFoundError, match="File not found"):
+        load_grib_data_in_batches("nonexistent_file.grib")
 
 
 @pytest.mark.skipif(

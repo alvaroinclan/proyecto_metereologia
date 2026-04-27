@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytest
 import folium
 import plotly.graph_objects as go
 import polars as pl
@@ -29,6 +30,33 @@ def test_compute_wind_rose_data():
 
     # Check that percentage sums to roughly 100%
     assert 99.0 <= rose["frequency_pct"].sum() <= 101.0
+
+
+def test_compute_wind_rose_data_empty():
+    df = pl.DataFrame({"ws10": [], "wd10": []})
+    rose = compute_wind_rose_data(df)
+    assert rose.height == 0
+
+
+def test_compute_wind_rose_data_value_error():
+    df = pl.DataFrame({"ws10": [5.0], "wd10": [90.0]})
+    with pytest.raises(ValueError, match="Length of speed_labels"):
+        compute_wind_rose_data(df, speed_bins=(0, 4, 8), speed_labels=("0-4",))
+
+
+def test_compute_wind_rose_data_custom_sectors_and_station():
+    df = pl.DataFrame({
+        "station": ["st1", "st1", "st2"],
+        "ws10": [5.0, 10.0, 5.0],
+        "wd10": [0.0, 45.0, 90.0]
+    })
+    rose = compute_wind_rose_data(df, n_sectors=8, station_col="station")
+    assert rose.height > 0
+    assert "station" in rose.columns
+    assert "direction" in rose.columns
+    # Check if direction has custom format like "0.0°"
+    dirs = rose["direction"].to_list()
+    assert any("°" in d for d in dirs)
 
 
 def test_plot_wind_rose():
@@ -75,6 +103,27 @@ def test_create_potential_map():
     )
     m2 = create_potential_map(df_no_coords)
     assert isinstance(m2, folium.Map)
+
+
+def test_create_potential_map_empty():
+    df = pl.DataFrame({"station": [], "theoretical_aep_gwh": [], "latitude": [], "longitude": []})
+    m = create_potential_map(df)
+    assert isinstance(m, folium.Map)
+
+
+def test_create_potential_map_with_all_stats():
+    df = pl.DataFrame({
+        "station": ["station_0"],
+        "theoretical_aep_gwh": [1.0],
+        "latitude": [43.0],
+        "longitude": [-5.5],
+        "empirical_aep_gwh": [0.9],
+        "weibull_A": [6.5],
+        "weibull_k": [2.1],
+        "rank": [1]
+    })
+    m = create_potential_map(df)
+    assert isinstance(m, folium.Map)
 
 
 def test_plot_top_stations_timeseries():
