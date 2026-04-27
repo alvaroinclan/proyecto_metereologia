@@ -152,19 +152,19 @@ def test_load_grib_data_in_batches_mocked():
             u10=(["time", "latitude", "longitude"], data),
             v10=(["time", "latitude", "longitude"], data),
             u100=(["time", "latitude", "longitude"], data),
-            v100=(["time", "latitude", "longitude"], data)
+            v100=(["time", "latitude", "longitude"], data),
         ),
-        coords=dict(time=times, latitude=lats, longitude=lons)
+        coords=dict(time=times, latitude=lats, longitude=lons),
     )
 
     ds_gust = xr.Dataset(
-        data_vars=dict(
-            fg10=(["time", "latitude", "longitude"], data)
-        ),
-        coords=dict(time=times, latitude=lats, longitude=lons)
+        data_vars=dict(fg10=(["time", "latitude", "longitude"], data)),
+        coords=dict(time=times, latitude=lats, longitude=lons),
     )
 
-    with patch("weather.data.load.cfgrib.open_datasets", return_value=[ds_wind, ds_gust]):
+    with patch(
+        "weather.data.load.cfgrib.open_datasets", return_value=[ds_wind, ds_gust]
+    ):
         with patch("weather.data.load.Path.exists", return_value=True):
             df = load_grib_data_in_batches("dummy.grib", batch_size=10)
 

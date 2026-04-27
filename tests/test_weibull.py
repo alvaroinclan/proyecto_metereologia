@@ -206,7 +206,10 @@ class TestFitWeibull:
     def test_fit_weibull_exception(self):
         """Should return None when the optimizer raises an exception."""
         speeds = np.array([5.0, 6.0, 7.0] * 10)
-        with patch("weather.data.weibull.weibull_min.fit", side_effect=RuntimeError("Convergence failed")):
+        with patch(
+            "weather.data.weibull.weibull_min.fit",
+            side_effect=RuntimeError("Convergence failed"),
+        ):
             assert fit_weibull(speeds) is None
 
 

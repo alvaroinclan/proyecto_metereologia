@@ -45,11 +45,13 @@ def test_compute_wind_rose_data_value_error():
 
 
 def test_compute_wind_rose_data_custom_sectors_and_station():
-    df = pl.DataFrame({
-        "station": ["st1", "st1", "st2"],
-        "ws10": [5.0, 10.0, 5.0],
-        "wd10": [0.0, 45.0, 90.0]
-    })
+    df = pl.DataFrame(
+        {
+            "station": ["st1", "st1", "st2"],
+            "ws10": [5.0, 10.0, 5.0],
+            "wd10": [0.0, 45.0, 90.0],
+        }
+    )
     rose = compute_wind_rose_data(df, n_sectors=8, station_col="station")
     assert rose.height > 0
     assert "station" in rose.columns
@@ -106,22 +108,26 @@ def test_create_potential_map():
 
 
 def test_create_potential_map_empty():
-    df = pl.DataFrame({"station": [], "theoretical_aep_gwh": [], "latitude": [], "longitude": []})
+    df = pl.DataFrame(
+        {"station": [], "theoretical_aep_gwh": [], "latitude": [], "longitude": []}
+    )
     m = create_potential_map(df)
     assert isinstance(m, folium.Map)
 
 
 def test_create_potential_map_with_all_stats():
-    df = pl.DataFrame({
-        "station": ["station_0"],
-        "theoretical_aep_gwh": [1.0],
-        "latitude": [43.0],
-        "longitude": [-5.5],
-        "empirical_aep_gwh": [0.9],
-        "weibull_A": [6.5],
-        "weibull_k": [2.1],
-        "rank": [1]
-    })
+    df = pl.DataFrame(
+        {
+            "station": ["station_0"],
+            "theoretical_aep_gwh": [1.0],
+            "latitude": [43.0],
+            "longitude": [-5.5],
+            "empirical_aep_gwh": [0.9],
+            "weibull_A": [6.5],
+            "weibull_k": [2.1],
+            "rank": [1],
+        }
+    )
     m = create_potential_map(df)
     assert isinstance(m, folium.Map)
 
