@@ -522,7 +522,7 @@ tests/
 
 ## Conclusión
 
-Este pipeline de principio a fin ha demostrado el poder de herramientas modernas de **Big Data** (Polars, Xarray, Parquet) integradas en Python, para resolver desde la ingesta de pesados reanálisis meteorológicos en GRIB, hasta modelos probabilísticos avanzados de energía y su diseminación geoespacial final.
+Este pipeline ha demostrado la necesidad de aplicar herramientas modernas de **Big Data** (Polars, Xarray, Parquet) integradas en Python, para resolver problemas complejos que van desde la ingesta de archivos meteorológicos en GRIB, hasta modelos probabilísticos avanzados de energía y su análisis geoespacial final. El trabajo realizado demuestra que es posible procesar grandes volúmenes de datos de manera eficiente y obtener resultados precisos y útiles para la toma de decisiones. En concreto, el pipeline permite identificar las mejores localizaciones para la instalación de parques eólicos y evaluar su potencial de producción energética. Además, se ha demostrado la importancia de la visualización interactiva para facilitar la comprensión de los resultados y la toma de decisiones. En nuestro caso, los resultados obtenidos nos hacen proponer un reanálisis en torno a las estaciones con mayor producción energética anual. Estas estaciones se encuentran en el borde de nuestro mallado y sería interesante poder analizarlo con mayor detalle ampliando el área de estudio. Esto se ve muy claro en el mapa del potencial eólico. 
 
 ## Alumno
 

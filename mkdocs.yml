@@ -27,7 +27,7 @@ theme:
 
 nav:
   - Home: index.md
-  - Analysis: analysis.md
+  - Gráficas: graficas.md
 
 markdown_extensions:
   - admonition

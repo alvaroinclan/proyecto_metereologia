@@ -112,7 +112,7 @@ def load_grib_data_in_batches(grib_path: str, batch_size: int = 10) -> pl.DataFr
     # Combine all batches
     final_df = pl.concat(all_dfs)
 
-    # Calculate wind speed and direction (vectorial calculation as requested in Reto Big Data)
+    # Calculate wind speed and direction (vectorial calculation)
     if "u10" in final_df.columns and "v10" in final_df.columns:
         final_df = final_df.with_columns(
             ws10=np.sqrt(pl.col("u10") ** 2 + pl.col("v10") ** 2),
